@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body{
+    margin: 0px;
+}
+
+html {
+    scroll-behavior: smooth; /* Membuat scroll lebih halus */
+}
+
+#main-header {
+    transform: translateY(0%);
+}
+
+#main-header.hide{
+    animation: hideheader 1s ease-in-out;
+    transform: translateY(-100%);
+}
+
+@keyframes hideheader{
+    0%{
+        transform: translateY(0%);
+    }
+    100%{
+        transform: translateY(-100%);
+    }
+}
+
+.fade{
+    animation: faded 0.5s;
+}
+
+@keyframes faded{
+    0%{
+        opacity: 0%;
+    }
+    100%{
+        opacity: 100%;
+    }
+}
