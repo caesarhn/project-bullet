@@ -49,6 +49,7 @@ export default {
         'blue-hcr': 'rgb(31,70,147)',
         'blue-se': 'rgb(41,106,148)',
         'blue-minor': 'rgb(217, 227, 244)',
+        'green-wa': 'rgb(18,140,126)'
       },
       zIndex: {
         '1000': '1000',
