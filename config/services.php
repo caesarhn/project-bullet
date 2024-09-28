@@ -31,4 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'gmaps_key' => [
+        'key' => env('GMAPS_KEY'),
+    ],
+
 ];

@@ -7,7 +7,7 @@
         <meta name="keywords" content="sewa mobil lampung, rental hiace, sewa fortuner, sewa mobil bandar lampung">
         <title>Sewa mobil murah - HCR Rental solusi sewa mudah</title>
         <link rel="shortcut icon" href="/logo-hcr.png">
-        <script src="https://maps.googleapis.com/maps/api/js?v-beta&key=AIzaSyAdkwLsmw614EHlTLFKWZRRUVKRIPALKFc&libraries=places"></script>
+        <script src="{{ 'https://maps.googleapis.com/maps/api/js?v-beta&key=' . config('services.gmaps_key.key') . '&libraries=places' }}"></script>
         @vite([
             'resources/css/app.css', 
             'resources/js/header.js', 
