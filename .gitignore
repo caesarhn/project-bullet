@@ -1,0 +1,9 @@
+# folder
+/build
+/src/*
+/CMakeFiles
+
+# image file
+meong_meong.png
+meong.jpg
+meong.png
