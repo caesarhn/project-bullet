@@ -68,6 +68,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
     }
 }
 
+
 std::array<std::string, 5> textureAsset = {
     "src/char/char1_idle1.png",
     "src/char/char1_idle2.png",
@@ -75,6 +76,14 @@ std::array<std::string, 5> textureAsset = {
     "src/char/char1_idle4.png",
     "src/char/char1_idle5.png"
 };
+
+// Animation
+const int TEXTURE_IDLE_MAX_IDX = 4;
+const int TEXTURE_IDLE_OFFSET = 0;
+const int TEXTURE_WALK_MAX_IDX = 9;
+const int TEXTURE_WALK_OFFSET = 5;
+
+int animationMovement = 0; //0=idle, 1=walk
 
 int animationToggle = 0;
 int updateModel = 0;
@@ -312,30 +321,46 @@ private:
         glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
         int frame = 0;
         while (!glfwWindowShouldClose(window)) {
-            glfwPollEvents();
-            processInput();
-
+            
             // limit framerate
             auto currentTime = std::chrono::high_resolution_clock::now();
             double elapsedTime = std::chrono::duration<double>(currentTime - lastFrameTime).count();
-
+            
             if (elapsedTime < FRAME_TIME) {
                 std::this_thread::sleep_for(std::chrono::duration<double>(FRAME_TIME - elapsedTime));
             }
-
+            
             lastFrameTime = std::chrono::high_resolution_clock::now();
-            if(animationToggle == 1 && frame == 10){
+            glfwPollEvents();
+            processInput();
+            std::cout << frame;
+
+            // Execute World Logic
+            if(animationMovement == 1 && frame == 10){
+                texture_set_binding[0] = 1;
+                if(texture_set_binding[1] < TEXTURE_WALK_OFFSET || texture_set_binding[1] > TEXTURE_WALK_MAX_IDX){
+                    texture_set_binding[1] = TEXTURE_WALK_OFFSET - 1;
+                }
                 texture_set_binding[1] = texture_set_binding[1] + 1;
+                std::cout << " texture bind : "<< texture_set_binding[0] << " "  << texture_set_binding[1];
+                // ubo.model = glm::translate(ubo.model, glm::vec3(0.1f, 0.0f, 0.0f));
+                frame = 0;
+            }
+            else if(animationMovement == 0 && frame == 10){
+                texture_set_binding[1] = texture_set_binding[1] + 1;
+                texture_set_binding[0] = 1;
+                std::cout << " texture bind : " << texture_set_binding[0] << " " << texture_set_binding[1];
                 if(texture_set_binding[1] >= textureAsset.size()){
                     texture_set_binding[1] = 0;
                 }
                 frame = 0;
             }
+            std::cout << " " << std::endl;
+
             frame++;
             if(frame == 60){
                 frame = 0;
             }
-            // gui.recordImGuiCommands(commandBuffers);
             drawFrame();
         }
         vkDeviceWaitIdle(device);
@@ -1408,7 +1433,7 @@ private:
             vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
             VkViewport viewport{};
-            viewport.x = 0.0f;
+            viewport.x = 400.0f;
             viewport.y = 0.0f;
             viewport.width = (float) swapChainExtent.width;
             viewport.height = (float) swapChainExtent.height;
@@ -1851,11 +1876,33 @@ private:
 
     void processInput(){
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            // texture_set_binding = glm::vec2(1, 0);
+            animationMovement = 1;
+            ubo.model = glm::translate(ubo.model, glm::vec3(0.0f, -0.3f, 0.0f));
+            // std::cout << "W" << std::endl;
+        }
+        else if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
             texture_set_binding = glm::vec2(1, 0);
-            animationToggle = 1;
-        }else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            animationMovement = 1;
+            ubo.model = glm::translate(ubo.model, glm::vec3(0.3f, 0.0f, 0.0f));
+        }
+        else if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+            animationMovement = 1;
+            ubo.model = glm::translate(ubo.model, glm::vec3(0.0f, 0.3f, 0.0f));
+        }
+        else if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
+            texture_set_binding = glm::vec2(1, 0);
+            animationMovement = 1;
+            ubo.model = glm::translate(ubo.model, glm::vec3(-0.3f, 0.0f, 0.0f));
+        }
+        else if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
             texture_set_binding = glm::vec2(0, 1);
             animationToggle = 0;
+        }
+        else{
+            // texture_set_binding = glm::vec2(0, 1);
+            animationMovement = 0;
+            // std::cout << "NO" << std::endl;
         }
     }
 };

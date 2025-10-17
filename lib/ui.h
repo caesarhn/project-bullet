@@ -3,10 +3,13 @@
 #include <backends/imgui_impl_vulkan.h>
 #include <backends/imgui_impl_glfw.h>
 #include <iostream>
+#include <stdio.h>
 
 class Gui {
 private:
     VkDescriptorPool imguiPool;
+    char text;
+    bool is_focused = false;
 
 public:
     void createImGuiDescriptorPool(VkDevice device);

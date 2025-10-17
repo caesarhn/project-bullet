@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.10)  # Versi minimum CMake
-project(GreatWall_0.0.1)                    # Nama proyek
+project(ProjectBullet_0.0.1)                    # Nama proyek
 
 # Pilih compiler
 set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_C_COMPILER gcc)
+
+set(CMAKE_CXX_STANDARD 17)            # Gunakan C++17
+set(CMAKE_CXX_STANDARD_REQUIRED True) 
 
 # Tentukan lokasi Vulkan SDK secara manual
 if(WIN32)
@@ -48,9 +51,6 @@ elseif(UNIX)
     set(LIBS Vulkan::Vulkan glfw)
 endif()
 
-set(CMAKE_CXX_STANDARD 17)            # Gunakan C++17
-set(CMAKE_CXX_STANDARD_REQUIRED True) 
-
 add_executable(
     vulkan_new 
     main.cpp 
@@ -66,7 +66,3 @@ add_executable(
 
 # Hubungkan dengan library Vulkan
 target_link_libraries(vulkan_new PRIVATE ${LIBS})
-# target_link_libraries(vulkan_new PRIVATE 
-#     vulkan-1
-#     glfw3
-# )

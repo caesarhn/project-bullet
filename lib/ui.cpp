@@ -67,6 +67,7 @@ void Gui::renderUI(){
     ImGui::NewFrame();
     // std::cout << "INIT IMGUI DEBUG" << std::endl;
 
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::Begin("Hello Vulkan ImGui");
     ImGui::Text("ImGui berjalan di Vulkan!");
     ImGui::End();
