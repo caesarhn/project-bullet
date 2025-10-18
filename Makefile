@@ -297,6 +297,30 @@ imgui-master/imgui_widgets.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/imgui-master/imgui_widgets.cpp.s
 .PHONY : imgui-master/imgui_widgets.cpp.s
 
+lib/app/app.o: lib/app/app.cpp.o
+.PHONY : lib/app/app.o
+
+# target to build an object file
+lib/app/app.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/app.cpp.o
+.PHONY : lib/app/app.cpp.o
+
+lib/app/app.i: lib/app/app.cpp.i
+.PHONY : lib/app/app.i
+
+# target to preprocess a source file
+lib/app/app.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/app.cpp.i
+.PHONY : lib/app/app.cpp.i
+
+lib/app/app.s: lib/app/app.cpp.s
+.PHONY : lib/app/app.s
+
+# target to generate assembly for a file
+lib/app/app.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/app.cpp.s
+.PHONY : lib/app/app.cpp.s
+
 lib/ui.o: lib/ui.cpp.o
 .PHONY : lib/ui.o
 
@@ -320,6 +344,174 @@ lib/ui.s: lib/ui.cpp.s
 lib/ui.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/ui.cpp.s
 .PHONY : lib/ui.cpp.s
+
+lib/vulkan/buffer.o: lib/vulkan/buffer.cpp.o
+.PHONY : lib/vulkan/buffer.o
+
+# target to build an object file
+lib/vulkan/buffer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/buffer.cpp.o
+.PHONY : lib/vulkan/buffer.cpp.o
+
+lib/vulkan/buffer.i: lib/vulkan/buffer.cpp.i
+.PHONY : lib/vulkan/buffer.i
+
+# target to preprocess a source file
+lib/vulkan/buffer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/buffer.cpp.i
+.PHONY : lib/vulkan/buffer.cpp.i
+
+lib/vulkan/buffer.s: lib/vulkan/buffer.cpp.s
+.PHONY : lib/vulkan/buffer.s
+
+# target to generate assembly for a file
+lib/vulkan/buffer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/buffer.cpp.s
+.PHONY : lib/vulkan/buffer.cpp.s
+
+lib/vulkan/draw.o: lib/vulkan/draw.cpp.o
+.PHONY : lib/vulkan/draw.o
+
+# target to build an object file
+lib/vulkan/draw.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/draw.cpp.o
+.PHONY : lib/vulkan/draw.cpp.o
+
+lib/vulkan/draw.i: lib/vulkan/draw.cpp.i
+.PHONY : lib/vulkan/draw.i
+
+# target to preprocess a source file
+lib/vulkan/draw.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/draw.cpp.i
+.PHONY : lib/vulkan/draw.cpp.i
+
+lib/vulkan/draw.s: lib/vulkan/draw.cpp.s
+.PHONY : lib/vulkan/draw.s
+
+# target to generate assembly for a file
+lib/vulkan/draw.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/draw.cpp.s
+.PHONY : lib/vulkan/draw.cpp.s
+
+lib/vulkan/init.o: lib/vulkan/init.cpp.o
+.PHONY : lib/vulkan/init.o
+
+# target to build an object file
+lib/vulkan/init.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/init.cpp.o
+.PHONY : lib/vulkan/init.cpp.o
+
+lib/vulkan/init.i: lib/vulkan/init.cpp.i
+.PHONY : lib/vulkan/init.i
+
+# target to preprocess a source file
+lib/vulkan/init.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/init.cpp.i
+.PHONY : lib/vulkan/init.cpp.i
+
+lib/vulkan/init.s: lib/vulkan/init.cpp.s
+.PHONY : lib/vulkan/init.s
+
+# target to generate assembly for a file
+lib/vulkan/init.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/init.cpp.s
+.PHONY : lib/vulkan/init.cpp.s
+
+lib/vulkan/pool.o: lib/vulkan/pool.cpp.o
+.PHONY : lib/vulkan/pool.o
+
+# target to build an object file
+lib/vulkan/pool.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/pool.cpp.o
+.PHONY : lib/vulkan/pool.cpp.o
+
+lib/vulkan/pool.i: lib/vulkan/pool.cpp.i
+.PHONY : lib/vulkan/pool.i
+
+# target to preprocess a source file
+lib/vulkan/pool.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/pool.cpp.i
+.PHONY : lib/vulkan/pool.cpp.i
+
+lib/vulkan/pool.s: lib/vulkan/pool.cpp.s
+.PHONY : lib/vulkan/pool.s
+
+# target to generate assembly for a file
+lib/vulkan/pool.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/pool.cpp.s
+.PHONY : lib/vulkan/pool.cpp.s
+
+lib/vulkan/texture.o: lib/vulkan/texture.cpp.o
+.PHONY : lib/vulkan/texture.o
+
+# target to build an object file
+lib/vulkan/texture.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/texture.cpp.o
+.PHONY : lib/vulkan/texture.cpp.o
+
+lib/vulkan/texture.i: lib/vulkan/texture.cpp.i
+.PHONY : lib/vulkan/texture.i
+
+# target to preprocess a source file
+lib/vulkan/texture.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/texture.cpp.i
+.PHONY : lib/vulkan/texture.cpp.i
+
+lib/vulkan/texture.s: lib/vulkan/texture.cpp.s
+.PHONY : lib/vulkan/texture.s
+
+# target to generate assembly for a file
+lib/vulkan/texture.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/texture.cpp.s
+.PHONY : lib/vulkan/texture.cpp.s
+
+lib/vulkan/variable.o: lib/vulkan/variable.cpp.o
+.PHONY : lib/vulkan/variable.o
+
+# target to build an object file
+lib/vulkan/variable.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/variable.cpp.o
+.PHONY : lib/vulkan/variable.cpp.o
+
+lib/vulkan/variable.i: lib/vulkan/variable.cpp.i
+.PHONY : lib/vulkan/variable.i
+
+# target to preprocess a source file
+lib/vulkan/variable.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/variable.cpp.i
+.PHONY : lib/vulkan/variable.cpp.i
+
+lib/vulkan/variable.s: lib/vulkan/variable.cpp.s
+.PHONY : lib/vulkan/variable.s
+
+# target to generate assembly for a file
+lib/vulkan/variable.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/variable.cpp.s
+.PHONY : lib/vulkan/variable.cpp.s
+
+lib/vulkan/vulkan_helper.o: lib/vulkan/vulkan_helper.cpp.o
+.PHONY : lib/vulkan/vulkan_helper.o
+
+# target to build an object file
+lib/vulkan/vulkan_helper.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/vulkan_helper.cpp.o
+.PHONY : lib/vulkan/vulkan_helper.cpp.o
+
+lib/vulkan/vulkan_helper.i: lib/vulkan/vulkan_helper.cpp.i
+.PHONY : lib/vulkan/vulkan_helper.i
+
+# target to preprocess a source file
+lib/vulkan/vulkan_helper.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/vulkan_helper.cpp.i
+.PHONY : lib/vulkan/vulkan_helper.cpp.i
+
+lib/vulkan/vulkan_helper.s: lib/vulkan/vulkan_helper.cpp.s
+.PHONY : lib/vulkan/vulkan_helper.s
+
+# target to generate assembly for a file
+lib/vulkan/vulkan_helper.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/vulkan_helper.cpp.s
+.PHONY : lib/vulkan/vulkan_helper.cpp.s
 
 main.o: main.cpp.o
 .PHONY : main.o
@@ -375,9 +567,33 @@ help:
 	@echo "... imgui-master/imgui_widgets.o"
 	@echo "... imgui-master/imgui_widgets.i"
 	@echo "... imgui-master/imgui_widgets.s"
+	@echo "... lib/app/app.o"
+	@echo "... lib/app/app.i"
+	@echo "... lib/app/app.s"
 	@echo "... lib/ui.o"
 	@echo "... lib/ui.i"
 	@echo "... lib/ui.s"
+	@echo "... lib/vulkan/buffer.o"
+	@echo "... lib/vulkan/buffer.i"
+	@echo "... lib/vulkan/buffer.s"
+	@echo "... lib/vulkan/draw.o"
+	@echo "... lib/vulkan/draw.i"
+	@echo "... lib/vulkan/draw.s"
+	@echo "... lib/vulkan/init.o"
+	@echo "... lib/vulkan/init.i"
+	@echo "... lib/vulkan/init.s"
+	@echo "... lib/vulkan/pool.o"
+	@echo "... lib/vulkan/pool.i"
+	@echo "... lib/vulkan/pool.s"
+	@echo "... lib/vulkan/texture.o"
+	@echo "... lib/vulkan/texture.i"
+	@echo "... lib/vulkan/texture.s"
+	@echo "... lib/vulkan/variable.o"
+	@echo "... lib/vulkan/variable.i"
+	@echo "... lib/vulkan/variable.s"
+	@echo "... lib/vulkan/vulkan_helper.o"
+	@echo "... lib/vulkan/vulkan_helper.i"
+	@echo "... lib/vulkan/vulkan_helper.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

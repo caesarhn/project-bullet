@@ -62,6 +62,16 @@ add_executable(
     imgui-master/imgui_demo.cpp
     imgui-master/backends/imgui_impl_vulkan.cpp
     imgui-master/backends/imgui_impl_glfw.cpp
+
+    lib/vulkan/buffer.cpp
+    lib/vulkan/draw.cpp
+    lib/vulkan/init.cpp
+    lib/vulkan/pool.cpp
+    lib/vulkan/texture.cpp
+    lib/vulkan/variable.cpp
+    lib/vulkan/vulkan_helper.cpp
+    
+    lib/app/app.cpp
 )  # Nama output dan source files
 
 # Hubungkan dengan library Vulkan

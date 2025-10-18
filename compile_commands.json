@@ -1,0 +1,87 @@
+[
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/main.cpp.o -c /home/caesar/game-dev/project-bullet/main.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/main.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/lib/ui.cpp.o -c /home/caesar/game-dev/project-bullet/lib/ui.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/lib/ui.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/imgui-master/imgui.cpp.o -c /home/caesar/game-dev/project-bullet/imgui-master/imgui.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/imgui-master/imgui.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/imgui-master/imgui_draw.cpp.o -c /home/caesar/game-dev/project-bullet/imgui-master/imgui_draw.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/imgui-master/imgui_draw.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/imgui-master/imgui_tables.cpp.o -c /home/caesar/game-dev/project-bullet/imgui-master/imgui_tables.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/imgui-master/imgui_tables.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/imgui-master/imgui_widgets.cpp.o -c /home/caesar/game-dev/project-bullet/imgui-master/imgui_widgets.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/imgui-master/imgui_widgets.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/imgui-master/imgui_demo.cpp.o -c /home/caesar/game-dev/project-bullet/imgui-master/imgui_demo.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/imgui-master/imgui_demo.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/imgui-master/backends/imgui_impl_vulkan.cpp.o -c /home/caesar/game-dev/project-bullet/imgui-master/backends/imgui_impl_vulkan.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/imgui-master/backends/imgui_impl_vulkan.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/imgui-master/backends/imgui_impl_glfw.cpp.o -c /home/caesar/game-dev/project-bullet/imgui-master/backends/imgui_impl_glfw.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/imgui-master/backends/imgui_impl_glfw.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/lib/vulkan/buffer.cpp.o -c /home/caesar/game-dev/project-bullet/lib/vulkan/buffer.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/lib/vulkan/buffer.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/lib/vulkan/draw.cpp.o -c /home/caesar/game-dev/project-bullet/lib/vulkan/draw.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/lib/vulkan/draw.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/lib/vulkan/init.cpp.o -c /home/caesar/game-dev/project-bullet/lib/vulkan/init.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/lib/vulkan/init.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/lib/vulkan/pool.cpp.o -c /home/caesar/game-dev/project-bullet/lib/vulkan/pool.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/lib/vulkan/pool.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/lib/vulkan/texture.cpp.o -c /home/caesar/game-dev/project-bullet/lib/vulkan/texture.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/lib/vulkan/texture.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/lib/vulkan/variable.cpp.o -c /home/caesar/game-dev/project-bullet/lib/vulkan/variable.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/lib/vulkan/variable.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/lib/vulkan/vulkan_helper.cpp.o -c /home/caesar/game-dev/project-bullet/lib/vulkan/vulkan_helper.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/lib/vulkan/vulkan_helper.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/lib/app/app.cpp.o -c /home/caesar/game-dev/project-bullet/lib/app/app.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/lib/app/app.cpp"
+}
+]
