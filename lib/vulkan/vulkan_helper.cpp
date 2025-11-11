@@ -1,9 +1,12 @@
 #include <vulkan/init.h>
 
+#ifdef __ANDROID__
+#else
 void VulkanApplication::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
     auto app = reinterpret_cast<VulkanApplication*>(glfwGetWindowUserPointer(window));
     app->framebufferResized = true;
 }
+#endif
 
 void VulkanApplication::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
     createInfo = {};
@@ -161,7 +164,10 @@ VkExtent2D VulkanApplication::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& c
         return capabilities.currentExtent;
     } else {
         int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
+        #ifdef __ANDROID__
+        #else
+            glfwGetFramebufferSize(window, &width, &height);
+        #endif
 
         VkExtent2D actualExtent = {
             static_cast<uint32_t>(width),
@@ -272,7 +278,8 @@ VulkanApplication::QueueFamilyIndices VulkanApplication::findQueueFamilies(VkPhy
 
     return indices;
 }
-
+#ifdef __ANDROID__
+#else
 std::vector<const char*> VulkanApplication::getRequiredExtensions() {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions;
@@ -286,6 +293,7 @@ std::vector<const char*> VulkanApplication::getRequiredExtensions() {
 
     return extensions;
 }
+#endif
 
 bool VulkanApplication::checkValidationLayerSupport() {
     uint32_t layerCount;

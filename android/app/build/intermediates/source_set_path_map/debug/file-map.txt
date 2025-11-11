@@ -1,0 +1,7 @@
+com.hanuc.vulkanapp-pngs-0 /home/caesar/game-dev/project-bullet/android/app/build/generated/res/pngs/debug
+com.hanuc.vulkanapp-resValues-1 /home/caesar/game-dev/project-bullet/android/app/build/generated/res/resValues/debug
+com.hanuc.vulkanapp-packageDebugResources-2 /home/caesar/game-dev/project-bullet/android/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.hanuc.vulkanapp-packageDebugResources-3 /home/caesar/game-dev/project-bullet/android/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.hanuc.vulkanapp-merged_res-4 /home/caesar/game-dev/project-bullet/android/app/build/intermediates/merged_res/debug
+com.hanuc.vulkanapp-debug-5 /home/caesar/game-dev/project-bullet/android/app/src/debug/res
+com.hanuc.vulkanapp-main-6 /home/caesar/game-dev/project-bullet/android/app/src/main/res

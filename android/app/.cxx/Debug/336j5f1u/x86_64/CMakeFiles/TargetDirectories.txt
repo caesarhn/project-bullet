@@ -1,0 +1,3 @@
+/home/caesar/game-dev/project-bullet/android/app/.cxx/Debug/336j5f1u/x86_64/CMakeFiles/vulkan-app.dir
+/home/caesar/game-dev/project-bullet/android/app/.cxx/Debug/336j5f1u/x86_64/CMakeFiles/edit_cache.dir
+/home/caesar/game-dev/project-bullet/android/app/.cxx/Debug/336j5f1u/x86_64/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,12 @@
+ninja: Entering directory `/home/caesar/game-dev/project-bullet/android/app/.cxx/Debug/336j5f1u/x86_64'
+[1/11] Building CXX object CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/char/char.cpp.o
+[2/11] Building CXX object CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/draw.cpp.o
+[3/11] Building CXX object CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/pool.cpp.o
+[4/11] Building CXX object CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/buffer.cpp.o
+[5/11] Building CXX object CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/variable.cpp.o
+[6/11] Building CXX object CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/app/app.cpp.o
+[7/11] Building CXX object CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/vulkan_helper.cpp.o
+[8/11] Building CXX object CMakeFiles/vulkan-app.dir/android_main.cpp.o
+[9/11] Building CXX object CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/texture.cpp.o
+[10/11] Building CXX object CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/init.cpp.o
+[11/11] Linking CXX shared library /home/caesar/game-dev/project-bullet/android/app/build/intermediates/cxx/Debug/336j5f1u/obj/x86_64/libvulkan-app.so

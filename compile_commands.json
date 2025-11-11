@@ -83,5 +83,10 @@
   "directory": "/home/caesar/game-dev/project-bullet",
   "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/lib/app/app.cpp.o -c /home/caesar/game-dev/project-bullet/lib/app/app.cpp",
   "file": "/home/caesar/game-dev/project-bullet/lib/app/app.cpp"
+},
+{
+  "directory": "/home/caesar/game-dev/project-bullet",
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/lib/char/char.cpp.o -c /home/caesar/game-dev/project-bullet/lib/char/char.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/lib/char/char.cpp"
 }
 ]

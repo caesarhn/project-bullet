@@ -1,0 +1,7 @@
+#Mon Oct 20 21:37:45 WIB 2025
+base.1=/home/caesar/game-dev/project-bullet/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
+path.1=0/classes.dex
+base.0=/home/caesar/game-dev/project-bullet/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
+renamed.1=classes2.dex
+renamed.0=classes.dex
+path.0=classes.dex

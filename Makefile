@@ -321,6 +321,30 @@ lib/app/app.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/app.cpp.s
 .PHONY : lib/app/app.cpp.s
 
+lib/char/char.o: lib/char/char.cpp.o
+.PHONY : lib/char/char.o
+
+# target to build an object file
+lib/char/char.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/char/char.cpp.o
+.PHONY : lib/char/char.cpp.o
+
+lib/char/char.i: lib/char/char.cpp.i
+.PHONY : lib/char/char.i
+
+# target to preprocess a source file
+lib/char/char.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/char/char.cpp.i
+.PHONY : lib/char/char.cpp.i
+
+lib/char/char.s: lib/char/char.cpp.s
+.PHONY : lib/char/char.s
+
+# target to generate assembly for a file
+lib/char/char.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/char/char.cpp.s
+.PHONY : lib/char/char.cpp.s
+
 lib/ui.o: lib/ui.cpp.o
 .PHONY : lib/ui.o
 
@@ -570,6 +594,9 @@ help:
 	@echo "... lib/app/app.o"
 	@echo "... lib/app/app.i"
 	@echo "... lib/app/app.s"
+	@echo "... lib/char/char.o"
+	@echo "... lib/char/char.i"
+	@echo "... lib/char/char.s"
 	@echo "... lib/ui.o"
 	@echo "... lib/ui.i"
 	@echo "... lib/ui.s"

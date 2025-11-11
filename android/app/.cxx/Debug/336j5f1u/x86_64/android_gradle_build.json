@@ -1,0 +1,38 @@
+{
+  "buildFiles": [
+    "/home/caesar/game-dev/project-bullet/android/app/src/main/cpp/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/caesar/Android/Sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/home/caesar/game-dev/project-bullet/android/app/.cxx/Debug/336j5f1u/x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/caesar/Android/Sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/home/caesar/game-dev/project-bullet/android/app/.cxx/Debug/336j5f1u/x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "vulkan-app::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "vulkan-app",
+      "output": "/home/caesar/game-dev/project-bullet/android/app/build/intermediates/cxx/Debug/336j5f1u/obj/x86_64/libvulkan-app.so",
+      "runtimeFiles": []
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "/home/caesar/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/bin/clang.lld",
+      "cppCompilerExecutable": "/home/caesar/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++.lld"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

@@ -1,0 +1,4 @@
+/home/caesar/Android/Sdk/cmake/3.22.1/bin/ninja \
+  -C \
+  /home/caesar/game-dev/project-bullet/android/app/.cxx/Debug/336j5f1u/x86_64 \
+  vulkan-app

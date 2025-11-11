@@ -72,6 +72,8 @@ add_executable(
     lib/vulkan/vulkan_helper.cpp
     
     lib/app/app.cpp
+
+    lib/char/char.cpp
 )  # Nama output dan source files
 
 # Hubungkan dengan library Vulkan

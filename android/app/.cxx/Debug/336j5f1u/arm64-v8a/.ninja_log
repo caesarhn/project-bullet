@@ -1,0 +1,26 @@
+# ninja log v5
+2	2049	1760970777552215670	CMakeFiles/vulkan-app.dir/android_main.cpp.o	453b6482c585a289
+73	2061	1760970777568215946	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/app/app.cpp.o	a8cce571cac3c8ce
+2	2276	1760970777780219591	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/init.cpp.o	b12ad71fcf5e97cf
+2	1818	1760970777324211749	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/draw.cpp.o	be30ff4ff4c73422
+1	26	1760969163889057082	build.ninja	11fea726f2be386f
+2	1436	1760970776940205138	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/variable.cpp.o	b64a0ec008f8f1c5
+2319	2359	1760970777868221103	/home/caesar/game-dev/project-bullet/android/app/build/intermediates/cxx/Debug/336j5f1u/obj/arm64-v8a/libvulkan-app.so	f6ac2648d54aface
+49	109	1760970775620182199	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/char/char.cpp.o	6ffd9b6a76a00d30
+25	2233	1760970777740218902	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/texture.cpp.o	57eaf628f728b674
+0	1	0	clean	27f5358e79f311b5
+2	2161	1760970777668217664	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/buffer.cpp.o	8fe3ec8857bdb7c1
+21	1752	1760970777256210581	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/pool.cpp.o	f01ea8984802bdea
+65	2319	1760970777824220346	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/vulkan_helper.cpp.o	f7a3fbb44fffa2ff
+0	4	0	clean	27f5358e79f311b5
+3	42	1760971060985044178	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/char/char.cpp.o	6ffd9b6a76a00d30
+2	1367	1760971062325034799	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/draw.cpp.o	be30ff4ff4c73422
+18	1654	1760971062609032801	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/app/app.cpp.o	a8cce571cac3c8ce
+2	1696	1760971062653032492	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/variable.cpp.o	b64a0ec008f8f1c5
+2	1746	1760971062705032126	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/buffer.cpp.o	8fe3ec8857bdb7c1
+2	1789	1760971062749031816	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/pool.cpp.o	f01ea8984802bdea
+1	1944	1760971062905030719	CMakeFiles/vulkan-app.dir/android_main.cpp.o	453b6482c585a289
+3	2015	1760971062973030241	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/texture.cpp.o	57eaf628f728b674
+3	2055	1760971063013029959	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/vulkan_helper.cpp.o	f7a3fbb44fffa2ff
+1	2314	1760971063273028117	CMakeFiles/vulkan-app.dir/home/caesar/game-dev/project-bullet/lib/vulkan/init.cpp.o	b12ad71fcf5e97cf
+2314	2354	1760971063317027807	/home/caesar/game-dev/project-bullet/android/app/build/intermediates/cxx/Debug/336j5f1u/obj/arm64-v8a/libvulkan-app.so	f6ac2648d54aface

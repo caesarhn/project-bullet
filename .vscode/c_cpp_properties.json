@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Android",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${env:ANDROID_NDK_HOME}/sources/third_party/vulkan/src/include",
+                "${env:ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include",
+                "${env:ANDROID_NDK_HOME}/sources/cxx-stl/llvm-libc++/include"
+            ],
+            "defines": [
+                "__ANDROID__",
+                "VK_USE_PLATFORM_ANDROID_KHR"
+            ],
+            "compilerPath": "${env:ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-clang-x64"
+        }
+    ],
+    "version": 4
+}

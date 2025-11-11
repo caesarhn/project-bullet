@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature
+        android:name="android.hardware.vulkan"
+        android:required="true" />
+        
+    <uses-feature
+        android:name="android.hardware.vulkan.level"
+        android:required="true"
+        android:version="1" />
+
+    <application
+        android:allowBackup="true"
+        android:label="Vulkan App">
+        
+        <!-- <activity
+            android:name="android.app.NativeActivity"
+            android:label="Vulkan App"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true">
+            
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="vulkan-app" />
+                
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> -->
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape">
+            
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="vulkan-app" />
+        </activity>
+    </application>
+</manifest>

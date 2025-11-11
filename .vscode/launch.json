@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Vulkan Project",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/vulkan_new",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build-project",
+            "windows": {
+                "program": "${workspaceFolder}/vulkan_new.exe"
+            },
+            "linux": {
+                "program": "${workspaceFolder}/vulkan_new"
+            }
+        }
+    ]
+}

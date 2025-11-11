@@ -15,8 +15,24 @@ void VulkanApplication::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDeb
         func(instance, debugMessenger, pAllocator);
     }
 }
+#ifdef __ANDROID__
+void VulkanApplication::setAndroidWindow(ANativeWindow *win){
+    window = win;
+}
+#else
+#endif
 
 void VulkanApplication::initWindow() {
+#ifdef __ANDROID__
+    if (window == nullptr) {
+        throw std::runtime_error("Android window is null");
+    }
+    
+    // Get window dimensions for Android
+    int32_t width = ANativeWindow_getWidth(window);
+    int32_t height = ANativeWindow_getHeight(window);
+    // LOGI("Android window size: %d x %d", width, height);
+#else
     glfwInit();
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -24,12 +40,19 @@ void VulkanApplication::initWindow() {
     window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
     glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+#endif
 }
 void VulkanApplication::initVulkan(){
     initVariables();
+    initUbo();
     createInstance();
     setupDebugMessenger();
-    createSurface();
+    #ifdef __ANDROID__
+        createAndroidSurface();
+    #else
+        // createSurface(config.window);
+        createSurface();
+    #endif
     pickPhysicalDevice();
     createLogicalDevice();
     createSwapChain();
@@ -40,27 +63,55 @@ void VulkanApplication::initVulkan(){
     createCommandPool();
     createDepthResources();
     createFramebuffers();
-
+    
     // experimental feature
     for(int i = 0; i < textureAsset.size(); i++){
         createTextureImages(textureAsset[i].c_str());
     }
+    for(int i = 0; i < characterAsset.size(); i++){
+        createCharacterTextureImages(characterAsset[i].c_str());
+    }
+
     createTextureImageViews();
     createTextureSamplers();
-
+    
     createTextureImage();
     createTextureImageView();
     createTextureSampler();
-    createVertexBuffer(vertices, vertexBuffer, vertexBufferMemory);
-    createIndexBuffer();
-    createUniformBuffers();
-    createDescriptorPool();
-    gui.createImGuiDescriptorPool(device);
-    createDescriptorSets();
-    createCommandBuffers();
-    std::cout << "DEBUG FUNCTION" << std::endl;
+    
+    // for(int i = 0; i < objectPool.size(); i++){
+        //     createVertexBuffer(objectPool[i].vertices, vertexBufferPool[i], vertexBufferMemoryPool[i]);
+        // }
+        
+        createVertexBuffer(vertices, vertexBuffer, vertexBufferMemory);
+        createVertexBuffer(vertices2, vertexBuffer1, vertexBufferMemory1);
+        createIndexBuffer();
+        createUniformBuffers();
+        createDescriptorPool();
+        createDescriptorSets();
+        std::cout << "DEBUG FUNCTION" << std::endl;
+        createCommandBuffers();
     createSyncObjects();
+    #ifdef __ANDROID__
+    #else
+    gui.createImGuiDescriptorPool(device);
     gui.initImGui(window, instance, device, physicalDevice, graphicsQueue, 0, renderPass);
+    #endif
+}
+
+void VulkanApplication::updateUiData(){
+    std::cout << "asdfasdf" << std::endl;
+    std::cout << "TEXTURE CHAR 1" << gui.characterList[1].textureIdx << std::endl;
+    // characters[1].set_and_binding = glm::vec2(1.0f, gui.characterList[1].textureIdx);
+    lockgui = gui.guiEnableWindows[0];
+    if(lockgui == false){
+        for(int i = 0; i < characters.size(); i++){
+            characters[i].set_and_binding = glm::vec4(1.0f, gui.characterList[i].textureIdx, 0.0f, 0.0f);
+            characters[i].model = defaultModel;
+            characters[i].model = glm::translate(characters[i].model, glm::vec3(gui.characterList[i].loc[0], gui.characterList[i].loc[1], 0.0f));
+            characters[i].playerState[0] = gui.characterList[i].state;
+        }
+    }
 }
 
 void VulkanApplication::createInstance(){
@@ -80,9 +131,20 @@ void VulkanApplication::createInstance(){
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
+    #ifdef __ANDROID__
+    VkApplicationInfo androidAppInfo = appInfo;
+    
+    std::vector<const char*> androidExtensions = {
+        VK_KHR_SURFACE_EXTENSION_NAME,
+        VK_KHR_ANDROID_SURFACE_EXTENSION_NAME  // KHUSUS ANDROID
+    };
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(androidExtensions.size());
+    createInfo.ppEnabledExtensionNames = androidExtensions.data();
+    #else
     auto extensions = getRequiredExtensions();
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
+    #endif
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
     if (enableValidationLayers) {
@@ -112,11 +174,23 @@ void VulkanApplication::setupDebugMessenger(){
         throw std::runtime_error("failed to set up debug messenger!");
     }
 }
+#ifdef __ANDROID__
+void VulkanApplication::createAndroidSurface() {
+    VkAndroidSurfaceCreateInfoKHR createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+    createInfo.window = window;
+    
+    if (vkCreateAndroidSurfaceKHR(instance, &createInfo, nullptr, &surface) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create Android surface!");
+    }
+}
+#else
 void VulkanApplication::createSurface(){
     if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {
         throw std::runtime_error("failed to create window surface!");
     }
 }
+#endif
 void VulkanApplication::pickPhysicalDevice(){
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -298,13 +372,29 @@ void VulkanApplication::createRenderPass(){
     }
 }
 void VulkanApplication::createDescriptorSetLayout(){
+
+    //Uniform Character
+    VkDescriptorSetLayoutBinding uboLayoutCharacter{};
+    uboLayoutCharacter.binding = 0;
+    uboLayoutCharacter.descriptorCount = 1;
+    uboLayoutCharacter.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutCharacter.pImmutableSamplers = nullptr;
+    uboLayoutCharacter.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    
+    std::array<VkDescriptorSetLayoutBinding,1> bindingCharacter = {uboLayoutCharacter};
+    VkDescriptorSetLayoutCreateInfo characterLayoutInfo{};
+    characterLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    characterLayoutInfo.bindingCount = static_cast<uint32_t>(bindingCharacter.size());
+    characterLayoutInfo.pBindings = bindingCharacter.data();
+
+    //Uniform Global
     VkDescriptorSetLayoutBinding uboLayoutBinding{};
     uboLayoutBinding.binding = 0;
     uboLayoutBinding.descriptorCount = 1;
     uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     uboLayoutBinding.pImmutableSamplers = nullptr;
     uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
+    
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
     samplerLayoutBinding.binding = 1;
     samplerLayoutBinding.descriptorCount = 1;
@@ -318,7 +408,22 @@ void VulkanApplication::createDescriptorSetLayout(){
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
     layoutInfo.pBindings = bindings.data();
 
-    //loop is defined before how much texture loaded n = 2
+    //Uniform Character Sampler
+    std::vector<VkDescriptorSetLayoutBinding> characterAnimateLayoutBinding (characterAsset.size());
+    for(int i = 0; i < characterAsset.size(); i++){
+        characterAnimateLayoutBinding[i].binding = i;
+        characterAnimateLayoutBinding[i].descriptorCount = 1;
+        characterAnimateLayoutBinding[i].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        characterAnimateLayoutBinding[i].pImmutableSamplers = nullptr;
+        characterAnimateLayoutBinding[i].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    }
+    
+    VkDescriptorSetLayoutCreateInfo characterAnimateLayoutInfo{};
+    characterAnimateLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    characterAnimateLayoutInfo.bindingCount = static_cast<uint32_t>(characterAnimateLayoutBinding.size());
+    characterAnimateLayoutInfo.pBindings = characterAnimateLayoutBinding.data();
+
+    //Uniform Global Sampler
     std::vector<VkDescriptorSetLayoutBinding> multipleSamplerLayoutBinding(textureAsset.size());
     for (int i = 0; i < textureAsset.size(); i++) {
         multipleSamplerLayoutBinding[i].binding = i;
@@ -332,6 +437,14 @@ void VulkanApplication::createDescriptorSetLayout(){
     layoutInfo2.bindingCount = static_cast<uint32_t>(multipleSamplerLayoutBinding.size());
     layoutInfo2.pBindings = multipleSamplerLayoutBinding.data();
 
+
+    //Create All Descroptorset Layout
+    if (vkCreateDescriptorSetLayout(device, &characterLayoutInfo, nullptr, &descriptorSetLayoutCharacter) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create descriptor set layout!");
+    }
+    if (vkCreateDescriptorSetLayout(device, &characterAnimateLayoutInfo, nullptr, &descriptorSetLayoutCharacterSampler) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create descriptor set layout!");
+    }
     if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create descriptor set layout!");
     }
@@ -435,11 +548,16 @@ void VulkanApplication::createGraphicsPipeline(){
     dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
     dynamicState.pDynamicStates = dynamicStates.data();
 
-    std::array<VkDescriptorSetLayout, 2> setLayouts = { descriptorSetLayout, descriptorSetLayout2 };
+    std::array<VkDescriptorSetLayout, 4> setLayouts = { 
+        descriptorSetLayout,
+        descriptorSetLayout2,
+        descriptorSetLayoutCharacter,
+        descriptorSetLayoutCharacterSampler
+    };
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 2;
+    pipelineLayoutInfo.setLayoutCount = setLayouts.size();
     pipelineLayoutInfo.pSetLayouts = setLayouts.data();
 
     if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
@@ -492,16 +610,53 @@ void VulkanApplication::createDepthResources(){
 }
 void VulkanApplication::createDescriptorSets() {
     // std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
-    std::vector<VkDescriptorSetLayout> layouts {descriptorSetLayout, descriptorSetLayout, descriptorSetLayout2, descriptorSetLayout2};
+    std::vector<VkDescriptorSetLayout> layouts {
+        descriptorSetLayout, descriptorSetLayout,
+        descriptorSetLayout2, descriptorSetLayout2
+    };
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.descriptorPool = descriptorPool;
     allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
     allocInfo.pSetLayouts = layouts.data();
-
-    descriptorSets.resize(MAX_FRAMES_IN_FLIGHT * 2);
+    
+    descriptorSets.resize((MAX_FRAMES_IN_FLIGHT * 2));
     if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate descriptor sets!");
+    }
+
+    std::vector<VkDescriptorSetLayout> characterLayouts(MAX_FRAMES_IN_FLIGHT * characters.size());
+    for(int i = 0; i < MAX_FRAMES_IN_FLIGHT * characters.size(); i++){
+        characterLayouts[i] = descriptorSetLayoutCharacter;
+    }
+    // std::cout << "Character layout: " << characterLayouts.size() << std::endl;
+
+    VkDescriptorSetAllocateInfo allocInfoCharacter{};
+    allocInfoCharacter.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfoCharacter.descriptorPool = descriptorPool;
+    allocInfoCharacter.descriptorSetCount = static_cast<uint32_t>(characterLayouts.size());
+    allocInfoCharacter.pSetLayouts = characterLayouts.data();
+
+    // std::cout << "Character layout count: " << allocInfoCharacter.descriptorSetCount << std::endl;
+    
+    descriptorSetsCharacter.resize((MAX_FRAMES_IN_FLIGHT * characters.size()));
+    if (vkAllocateDescriptorSets(device, &allocInfoCharacter, descriptorSetsCharacter.data()) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate descriptor sets character!");
+    }
+
+    std::vector<VkDescriptorSetLayout> characterSamplerLayout {
+        descriptorSetLayoutCharacterSampler, descriptorSetLayoutCharacterSampler
+    };
+
+    VkDescriptorSetAllocateInfo allocInfoCharacterSampler{};
+    allocInfoCharacterSampler.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfoCharacterSampler.descriptorPool = descriptorPool;
+    allocInfoCharacterSampler.descriptorSetCount = static_cast<uint32_t>(characterSamplerLayout.size());
+    allocInfoCharacterSampler.pSetLayouts = characterSamplerLayout.data();
+
+    descriptorSetsCharacterSampler.resize(MAX_FRAMES_IN_FLIGHT);
+    if (vkAllocateDescriptorSets(device, &allocInfoCharacterSampler, descriptorSetsCharacterSampler.data()) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate descriptor sets character!");
     }
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
@@ -509,12 +664,19 @@ void VulkanApplication::createDescriptorSets() {
         bufferInfo.buffer = uniformBuffers[i];
         bufferInfo.offset = 0;
         bufferInfo.range = sizeof(UniformBufferObject);
-
+        
+        std::vector<VkDescriptorBufferInfo> characterInfo(characters.size());
+        for(int s = 0; s < characters.size(); s++){
+            characterInfo[s].buffer = characterUniformBuffers[(s*MAX_FRAMES_IN_FLIGHT)+i];
+            characterInfo[s].offset = 0;
+            characterInfo[s].range = sizeof(UniformBufferObject);
+        } 
+        
         VkDescriptorImageInfo imageInfo{};
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         imageInfo.imageView = textureImageView;
         imageInfo.sampler = textureSampler;
-
+        
         std::cout << "imageSamplers size: " << textureSamplers.size() << std::endl;
         std::cout << "textureImages " << textureImages.size() << std::endl;
         std::vector<VkDescriptorImageInfo> imageInfos(textureImages.size());
@@ -523,15 +685,21 @@ void VulkanApplication::createDescriptorSets() {
             imageInfos[x].imageView = textureImageViews[x];
             imageInfos[x].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         }
-
-
+        
+        std::vector<VkDescriptorImageInfo> characterImageInfos(characterImages.size());
+        for (size_t x = 0; x < characterImages.size(); x++){
+            characterImageInfos[x].sampler = characterSamplers[x];
+            characterImageInfos[x].imageView = characterImageViews[x];
+            characterImageInfos[x].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        }
+        
         int tex_count = static_cast<int>(textureImages.size());
         if(tex_count == 0){
             tex_count = 1;
             std::cout << "texture count: 0" << std::endl;
         }
-        std::vector<VkWriteDescriptorSet> descriptorWrites(tex_count + 2);
-
+        std::vector<VkWriteDescriptorSet> descriptorWrites(tex_count + 2 + characters.size() + characterImages.size());
+        
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = descriptorSets[i];
         descriptorWrites[0].dstBinding = 0;
@@ -539,7 +707,7 @@ void VulkanApplication::createDescriptorSets() {
         descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         descriptorWrites[0].descriptorCount = 1;
         descriptorWrites[0].pBufferInfo = &bufferInfo;
-
+        
         descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[1].dstSet = descriptorSets[i];
         descriptorWrites[1].dstBinding = 1;
@@ -547,7 +715,8 @@ void VulkanApplication::createDescriptorSets() {
         descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[1].descriptorCount = 1;
         descriptorWrites[1].pImageInfo = &imageInfo;
-
+        
+        
         for (int s = 0; s < textureImages.size(); s++) {
             descriptorWrites[2+s].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             descriptorWrites[2+s].dstSet = descriptorSets[i+2];
@@ -557,8 +726,30 @@ void VulkanApplication::createDescriptorSets() {
             descriptorWrites[2+s].descriptorCount = 1;
             descriptorWrites[2+s].pImageInfo = &imageInfos[s];
         }
-        vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+        
+        for(int s = 0; s < characters.size(); s++){
+            int desc_idx = 4 + (2 * s) + i;
+            descriptorWrites[2+textureImages.size()+s].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[2+textureImages.size()+s].dstSet = descriptorSetsCharacter[(s*MAX_FRAMES_IN_FLIGHT)+i];
+            descriptorWrites[2+textureImages.size()+s].dstBinding = 0;
+            descriptorWrites[2+textureImages.size()+s].dstArrayElement = 0;
+            descriptorWrites[2+textureImages.size()+s].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorWrites[2+textureImages.size()+s].descriptorCount = 1;
+            descriptorWrites[2+textureImages.size()+s].pBufferInfo = &characterInfo[s];
+        }
+
+        for(int s = 0; s < characterImages.size(); s++){
+            descriptorWrites[2+textureImages.size()+characters.size()+s].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[2+textureImages.size()+characters.size()+s].dstSet = descriptorSetsCharacterSampler[i];
+            descriptorWrites[2+textureImages.size()+characters.size()+s].dstBinding = s;
+            descriptorWrites[2+textureImages.size()+characters.size()+s].dstArrayElement = 0;
+            descriptorWrites[2+textureImages.size()+characters.size()+s].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            descriptorWrites[2+textureImages.size()+characters.size()+s].descriptorCount = 1;
+            descriptorWrites[2+textureImages.size()+characters.size()+s].pImageInfo = &characterImageInfos[s];
+        }
+        
         std::cout << "DEBUG CREATE DESCRIPTOR SET" << std::endl;
+        vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 }
 
@@ -600,21 +791,29 @@ void VulkanApplication::cleanupSwapChain() {
 }
 
 void VulkanApplication::cleanup() {
+    #ifdef __ANDROID__
+    #else
     gui.cleanupImGui(device);
+    #endif
     cleanupSwapChain();
 
     vkDestroyPipeline(device, graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
     vkDestroyRenderPass(device, renderPass, nullptr);
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    for (size_t i = 0; i < uniformBuffers.size(); i++) {
         vkDestroyBuffer(device, uniformBuffers[i], nullptr);
         vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
     }
-
-    vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+    
+    for (size_t i = 0; i < characterUniformBuffers.size(); i++) {
+        vkDestroyBuffer(device, characterUniformBuffers[i], nullptr);
+        vkFreeMemory(device, characterUniformBuffersMemory[i], nullptr);
+    }
 
     std::cout << "DEBUG CLEANUP 1" << std::endl;
+    vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+
     for (int i = 0; i < textureImages.size(); i++) {
         vkDestroySampler(device, textureSamplers[i], nullptr);
         vkDestroyImageView(device, textureImageViews[i], nullptr);
@@ -630,6 +829,7 @@ void VulkanApplication::cleanup() {
 
     vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
     vkDestroyDescriptorSetLayout(device, descriptorSetLayout2, nullptr);
+    vkDestroyDescriptorSetLayout(device, descriptorSetLayoutCharacter, nullptr);
 
     vkDestroyBuffer(device, indexBuffer, nullptr);
     vkFreeMemory(device, indexBufferMemory, nullptr);
@@ -654,18 +854,23 @@ void VulkanApplication::cleanup() {
     vkDestroySurfaceKHR(instance, surface, nullptr);
     vkDestroyInstance(instance, nullptr);
 
-    glfwDestroyWindow(window);
-
-    glfwTerminate();
+    #ifdef __ANDROID__
+    #else
+        glfwDestroyWindow(window);
+        glfwTerminate();
+    #endif
 }
 
 void VulkanApplication::recreateSwapChain() {
     int width = 0, height = 0;
-    glfwGetFramebufferSize(window, &width, &height);
-    while (width == 0 || height == 0) {
+    #ifdef __ANDROID__
+    #else
         glfwGetFramebufferSize(window, &width, &height);
-        glfwWaitEvents();
-    }
+        while (width == 0 || height == 0) {
+            glfwGetFramebufferSize(window, &width, &height);
+            glfwWaitEvents();
+        }
+    #endif
 
     vkDeviceWaitIdle(device);
 

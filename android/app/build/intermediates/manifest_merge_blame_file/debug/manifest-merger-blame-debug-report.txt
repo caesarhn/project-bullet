@@ -1,0 +1,84 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.hanuc.vulkanapp"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-feature
+11-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:4:5-6:35
+12        android:name="android.hardware.vulkan"
+12-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:5:9-47
+13        android:required="true" />
+13-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:6:9-32
+14    <uses-feature
+14-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:8:5-11:31
+15        android:name="android.hardware.vulkan.level"
+15-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:9:9-53
+16        android:required="true"
+16-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:10:9-32
+17        android:version="1" />
+17-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:11:9-28
+18
+19    <application
+19-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:13:5-48:19
+20        android:allowBackup="true"
+20-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:14:9-35
+21        android:debuggable="true"
+22        android:extractNativeLibs="false"
+23        android:label="Vulkan App" >
+23-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:15:9-35
+24
+25        <!--
+26        <activity
+27            android:name="android.app.NativeActivity"
+28            android:label="Vulkan App"
+29            android:configChanges="orientation|keyboardHidden|screenSize"
+30            android:exported="true">
+31            
+32            <meta-data
+33                android:name="android.app.lib_name"
+34                android:value="vulkan-app" />
+35                
+36            <intent-filter>
+37                <action android:name="android.intent.action.MAIN" />
+38                <category android:name="android.intent.category.LAUNCHER" />
+39            </intent-filter>
+40        </activity>
+41        -->
+42        <activity
+42-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:32:9-47:20
+43            android:name="com.hanuc.vulkanapp.MainActivity"
+43-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:33:13-41
+44            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+44-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:34:13-129
+45            android:exported="true"
+45-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:35:13-36
+46            android:launchMode="singleTop"
+46-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:36:13-43
+47            android:screenOrientation="landscape" >
+47-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:37:13-50
+48            <intent-filter>
+48-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:39:13-42:29
+49                <action android:name="android.intent.action.MAIN" />
+49-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:40:17-69
+49-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:40:25-66
+50
+51                <category android:name="android.intent.category.LAUNCHER" />
+51-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:41:17-77
+51-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:41:27-74
+52            </intent-filter>
+53
+54            <meta-data
+54-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:44:13-46:46
+55                android:name="android.app.lib_name"
+55-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:45:17-52
+56                android:value="vulkan-app" />
+56-->/home/caesar/game-dev/project-bullet/android/app/src/main/AndroidManifest.xml:46:17-43
+57        </activity>
+58    </application>
+59
+60</manifest>

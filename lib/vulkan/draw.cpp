@@ -39,19 +39,36 @@ void VulkanApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint3
         scissor.offset = {0, 0};
         scissor.extent = swapChainExtent;
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
+        
         VkBuffer vertexBuffers[] = {vertexBuffer};
+        VkBuffer vertexBuffers1[] = {vertexBuffer1};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-
         vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &descriptorSets[currentFrame + 2], 0, nullptr);
-
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 2, 1, &descriptorSetsCharacter[currentFrame], 0, nullptr);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 3, 1, &descriptorSetsCharacterSampler[currentFrame], 0, nullptr);
+        std::cout << "DEBUG Record Command Buffer" << std::endl;
         vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers1, offsets);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 2, 1, &descriptorSetsCharacter[currentFrame+2], 0, nullptr);
+        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+        
+        VkBuffer vertexBufferss[] = {vertexBuffer1};
+        VkDeviceSize offset1[] = {0};
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBufferss, offset1);
+        
+        // updateUniformBuffer(currentFrame);
+        // vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+
+        #ifdef __ANDROID__
+        #else
         gui.renderUI();
         gui.recordImGuiCommands(commandBuffer);
+        #endif
     vkCmdEndRenderPass(commandBuffer);
 
     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
@@ -86,9 +103,17 @@ void VulkanApplication::updateUniformBuffer(uint32_t currentImage) {
 
         }
 
-        ubo.set_and_binding = texture_set_binding;
+        // ubo.set_and_binding = texture_set_binding;
+        // ubo2.set_and_binding = texture_set_binding;
+        characters[0].set_and_binding = texture_set_binding;
+        // characters[1].set_and_binding = glm::vec2(1.0f, 1.0f);
+        // characters[1].playerState = glm::vec2(1.0f, 0.0f); 
 
         memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+
+        memcpy(characterUniformBuffersMapped[currentImage], &characters[0], sizeof(ubo));
+        memcpy(characterUniformBuffersMapped[currentImage+2], &characters[1], sizeof(ubo));
+        std::cout << "Current frame: " << currentImage << std::endl;
     }
 
 void VulkanApplication::drawFrame() {
@@ -156,38 +181,116 @@ void VulkanApplication::drawFrame() {
 }
 
 void VulkanApplication::mainLoop() {
-    glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
+    #ifdef __ANDROID__
     int frame = 0;
-    while (!glfwWindowShouldClose(window)) {
-
-        // limit framerate
+    float animationFrame = 1.0f;
+    auto lastFrameTime = std::chrono::high_resolution_clock::now();
+    
+    while (!androidExitMainLoop) {
+        // Frame timing (sama seperti desktop)
         auto currentTime = std::chrono::high_resolution_clock::now();
         double elapsedTime = std::chrono::duration<double>(currentTime - lastFrameTime).count();
-
+        
         if (elapsedTime < FRAME_TIME) {
             std::this_thread::sleep_for(std::chrono::duration<double>(FRAME_TIME - elapsedTime));
         }
-
+        
         lastFrameTime = std::chrono::high_resolution_clock::now();
-        glfwPollEvents();
-        // processInput();
-        std::cout << frame;
+        
+        // Process Android events (menggantikan glfwPollEvents)
+        // processAndroidEvents();
+        
+        // Animation logic (SAMA PERSIS dengan desktop)
+        // if(frame == 12){
+            //     ubo.animationIdx = animationFrame;
+            
+            //     if(animationFrame == 8){
+        //         animationFrame = 1;
+        //     } else {
+            //         animationFrame++;
+            //     }
+        // }
 
-        // Execute World Logic
-        if(animationMovement == 1 && frame == 10){
+        // Execute World Logic (SAMA PERSIS dengan desktop)
+        if(animationMovement == 1 && frame == 12){
             texture_set_binding[0] = 1;
             if(texture_set_binding[1] < TEXTURE_WALK_OFFSET || texture_set_binding[1] > TEXTURE_WALK_MAX_IDX){
                 texture_set_binding[1] = TEXTURE_WALK_OFFSET - 1;
             }
             texture_set_binding[1] = texture_set_binding[1] + 1;
-            std::cout << " texture bind : "<< texture_set_binding[0] << " "  << texture_set_binding[1];
+            // LOGI("texture bind : %d %d", texture_set_binding[0], texture_set_binding[1]);
+            frame = 0;
+        }
+        else if(animationMovement == 0 && frame == 10){
+            texture_set_binding[1] = texture_set_binding[1] + 1;
+            texture_set_binding[0] = 1;
+            // LOGI("texture bind : %d %d", texture_set_binding[0], texture_set_binding[1]);
+            if(texture_set_binding[1] >= textureAsset.size()){
+                texture_set_binding[1] = 0;
+            }
+            frame = 0;
+        }
+        
+        frame++;
+        if(frame == 60){
+            frame = 0;
+        }
+        updateUiData();
+        drawFrame();
+    }
+    
+    vkDeviceWaitIdle(device);
+    #else
+    glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
+    int frame = 0;
+    int animationFrame = 0;
+    while (!glfwWindowShouldClose(window)) {
+        float xx = 2.0f;
+        std::cout << "PLAYER STATE: " << characters[0].playerState[0] << " " << characters[1].playerState[0] << std::endl;
+        // limit framerate
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        double elapsedTime = std::chrono::duration<double>(currentTime - lastFrameTime).count();
+        
+        if (elapsedTime < FRAME_TIME) {
+            std::this_thread::sleep_for(std::chrono::duration<double>(FRAME_TIME - elapsedTime));
+        }
+        
+        lastFrameTime = std::chrono::high_resolution_clock::now();
+        glfwPollEvents();
+        // processInput();
+        std::cout << frame;
+
+        if(frame == 10){
+            ubo.animationIdx = glm::vec4(animationFrame, 0.0f, 0.0f, 0.0f);
+            // characters[0].playerState = glm::vec4(10.0f, 0.0f, 0.0f, 0.0f);
+            
+            if(animationFrame == 8){
+                animationFrame = 0;
+            }else{
+                characters[1].playerState = glm::vec4(1.0f, (float)(animationFrame), 0.0f, 0.0f);
+                animationFrame++;
+                std::cout << "idle animation: " << characters[1].playerState[1] << std::endl;
+            }
+        }else{
+            // characters[0].playerState = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
+            // characters[1].playerState = glm::vec4(10.0f, 0.0f, 0.0f, 0.0f);
+        }
+        
+        // Execute World Logic
+        if(animationMovement == 1 && frame == 12){
+            texture_set_binding[0] = 1;
+            if(texture_set_binding[1] < TEXTURE_WALK_OFFSET || texture_set_binding[1] > TEXTURE_WALK_MAX_IDX){
+                texture_set_binding[1] = TEXTURE_WALK_OFFSET - 1;
+            }
+            texture_set_binding[1] = texture_set_binding[1] + 1;
+            // std::cout << " texture bind : "<< texture_set_binding[0] << " "  << texture_set_binding[1];
             // ubo.model = glm::translate(ubo.model, glm::vec3(0.1f, 0.0f, 0.0f));
             frame = 0;
         }
         else if(animationMovement == 0 && frame == 10){
             texture_set_binding[1] = texture_set_binding[1] + 1;
             texture_set_binding[0] = 1;
-            std::cout << " texture bind : " << texture_set_binding[0] << " " << texture_set_binding[1];
+            // std::cout << " texture bind : " << texture_set_binding[0] << " " << texture_set_binding[1];
             if(texture_set_binding[1] >= textureAsset.size()){
                 texture_set_binding[1] = 0;
             }
@@ -199,8 +302,10 @@ void VulkanApplication::mainLoop() {
         if(frame == 60){
             frame = 0;
         }
+        updateUiData();
         drawFrame();
     }
     vkDeviceWaitIdle(device);
+    #endif
     std::cout << "MAIN LOOP DEBUG" << std::endl;
 }
