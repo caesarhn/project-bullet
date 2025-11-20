@@ -21,12 +21,19 @@ struct CharacterForGui{
     float loc[2];
     float state;
 };
+
+struct CharSkillsBattleUi{
+
+};
     
 class Gui {
 private:
     VkDescriptorPool imguiPool;
     char text;
     bool is_focused = false;
+
+    bool isUVMap = false;
+    VkDescriptorSet uvMap;
 
 public:
 
@@ -40,7 +47,9 @@ public:
     void initImGui(GLFWwindow *window, VkInstance instance, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue queue, uint32_t queueFamily, VkRenderPass renderPass);
     #endif
     void recordImGuiCommands(VkCommandBuffer commandBuffer);
+    void setUVMap(VkDescriptorSet sampler);
     void renderUI();
     void cleanupImGui(VkDevice device);
+
 };
 

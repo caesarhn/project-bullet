@@ -70,9 +70,15 @@ void Gui::initImGui(GLFWwindow *window, VkInstance instance, VkDevice device, Vk
     // 1. Buat context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+
+    ImFontConfig font_cfg;
+    font_cfg.RasterizerMultiply = 1.5f;
+
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.DisplaySize = ImVec2(static_cast<float>(800), static_cast<float>(600));
+    io.DisplaySize = ImVec2(static_cast<float>(2080), static_cast<float>(1080));
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Aktifkan navigasi keyboard
+    io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines;
+    io.Fonts->Build();
 
     // 2. Style ImGui (Opsional)
     ImGui::StyleColorsDark();
@@ -95,6 +101,10 @@ void Gui::initImGui(GLFWwindow *window, VkInstance instance, VkDevice device, Vk
     init_info.RenderPass = renderPass;
 
     ImGui_ImplVulkan_Init(&init_info);
+
+    //set font 
+    io.Fonts->AddFontFromFileTTF("src/font/minecraftia.ttf", 16.0f); // ukuran kecil agar tetap tajam
+
     
     //initial gui variable
     guiEnableWindows.resize(1);
@@ -128,9 +138,26 @@ void Gui::renderUI(){
         ImGui::InputFloat2("location"+i, characterList[i].loc, "%.1f");
         ImGui::InputFloat("state"+i, &characterList[i].state);
     }
+    bool uv = isUVMap;
+    if (ImGui::Checkbox("uv map", &uv)){
+        isUVMap = uv;        // simpan kembali hasilnya
+    }
     ImGui::End();
 
+
+    // if(isUVMap == true){
+    //     ImGui::Begin("UV Map");
+    //     ImGui::Image((ImTextureID)(uvMap), ImVec2(200, 200));
+
+    //     ImGui::End();
+    // }
+
+
     ImGui::Render();
+}
+
+void Gui::setUVMap(VkDescriptorSet sampler){
+    uvMap = sampler;
 }
 
 void Gui::cleanupImGui(VkDevice device){

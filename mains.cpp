@@ -3,11 +3,11 @@
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "lib/stb_image.h"
 
 #include <iostream>
 #include <fstream>
@@ -25,8 +25,8 @@
 #include <stdexcept>
 #include <thread>
 
-#include <ui.h>
-#include <app/app.h>
+// #include "lib/ui/ui.h"
+// #include <app/app.h>
 // #include <texture/texture.h>
 
 const uint32_t WIDTH = 800;
@@ -180,7 +180,7 @@ public:
     void run() {
         initWindow();
         initVulkan();
-        gui.initImGui(window, instance, device, physicalDevice, graphicsQueue, 0, renderPass);
+        // gui.initImGui(window, instance, device, physicalDevice, graphicsQueue, 0, renderPass);
         initUbo();
         // // std::cout << "RUN DEBUG" << std::endl;
         mainLoop();
@@ -189,7 +189,7 @@ public:
 
 private:
     GLFWwindow* window;
-    Gui gui;
+    // Gui gui;
 
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
@@ -307,7 +307,7 @@ private:
         createIndexBuffer();
         createUniformBuffers();
         createDescriptorPool();
-        gui.createImGuiDescriptorPool(device);
+        // gui.createImGuiDescriptorPool(device);
         createDescriptorSets();
         createCommandBuffers();
         createSyncObjects();
@@ -391,7 +391,7 @@ private:
     }
 
     void cleanup() {
-        gui.cleanupImGui(device);
+        // gui.cleanupImGui(device);
         cleanupSwapChain();
 
         vkDestroyPipeline(device, graphicsPipeline, nullptr);
@@ -1484,8 +1484,8 @@ private:
             vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &descriptorSets[currentFrame + 2], 0, nullptr);
 
             vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-            gui.renderUI();
-            gui.recordImGuiCommands(commandBuffer);
+            // gui.renderUI();
+            // gui.recordImGuiCommands(commandBuffer);
         vkCmdEndRenderPass(commandBuffer);
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {

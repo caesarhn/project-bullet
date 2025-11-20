@@ -83,14 +83,15 @@ void VulkanApplication::initVulkan(){
         //     createVertexBuffer(objectPool[i].vertices, vertexBufferPool[i], vertexBufferMemoryPool[i]);
         // }
         
-        createVertexBuffer(vertices, vertexBuffer, vertexBufferMemory);
-        createVertexBuffer(vertices2, vertexBuffer1, vertexBufferMemory1);
-        createIndexBuffer();
-        createUniformBuffers();
-        createDescriptorPool();
-        createDescriptorSets();
-        std::cout << "DEBUG FUNCTION" << std::endl;
-        createCommandBuffers();
+    createVertexBuffer(vertices, vertexBuffer, vertexBufferMemory);
+    createVertexBuffer(vertices2, vertexBuffer1, vertexBufferMemory1);
+    createVertexBuffer(tileBlock, vertexBufferTile, vertexBufferMemoryTile);
+    createIndexBuffer();
+    createUniformBuffers();
+    createDescriptorPool();
+    createDescriptorSets();
+    std::cout << "DEBUG FUNCTION" << std::endl;
+    createCommandBuffers();
     createSyncObjects();
     #ifdef __ANDROID__
     #else
@@ -105,11 +106,11 @@ void VulkanApplication::updateUiData(){
     // characters[1].set_and_binding = glm::vec2(1.0f, gui.characterList[1].textureIdx);
     lockgui = gui.guiEnableWindows[0];
     if(lockgui == false){
-        for(int i = 0; i < characters.size(); i++){
-            characters[i].set_and_binding = glm::vec4(1.0f, gui.characterList[i].textureIdx, 0.0f, 0.0f);
+        for(int i = 0; i < 2; i++){
+            // characters[i].set_and_binding = glm::vec4(1.0f, gui.characterList[i].textureIdx, 0.0f, 0.0f);
             characters[i].model = defaultModel;
             characters[i].model = glm::translate(characters[i].model, glm::vec3(gui.characterList[i].loc[0], gui.characterList[i].loc[1], 0.0f));
-            characters[i].playerState[0] = gui.characterList[i].state;
+            characters[i].controlAnimation[0] = gui.characterList[i].state;
         }
     }
 }
@@ -408,6 +409,20 @@ void VulkanApplication::createDescriptorSetLayout(){
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
     layoutInfo.pBindings = bindings.data();
 
+    //uniform Tile
+    VkDescriptorSetLayoutBinding uboLayoutBindingTile{};
+    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.pImmutableSamplers = nullptr;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    std::array<VkDescriptorSetLayoutBinding,1> bindingTile = {uboLayoutBindingTile};
+    VkDescriptorSetLayoutCreateInfo tileLayoutInfo{};
+    tileLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    tileLayoutInfo.bindingCount = static_cast<uint32_t>(bindingTile.size());
+    tileLayoutInfo.pBindings = bindingTile.data();
+
     //Uniform Character Sampler
     std::vector<VkDescriptorSetLayoutBinding> characterAnimateLayoutBinding (characterAsset.size());
     for(int i = 0; i < characterAsset.size(); i++){
@@ -449,6 +464,9 @@ void VulkanApplication::createDescriptorSetLayout(){
         throw std::runtime_error("failed to create descriptor set layout!");
     }
     if (vkCreateDescriptorSetLayout(device, &layoutInfo2, nullptr, &descriptorSetLayout2) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create descriptor set layout!");
+    }
+    if (vkCreateDescriptorSetLayout(device, &tileLayoutInfo, nullptr, &descriptorSetLayoutTile) != VK_SUCCESS) {
         throw std::runtime_error("failed to create descriptor set layout!");
     }
 }
@@ -610,6 +628,8 @@ void VulkanApplication::createDepthResources(){
 }
 void VulkanApplication::createDescriptorSets() {
     // std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
+
+    //SET 0
     std::vector<VkDescriptorSetLayout> layouts {
         descriptorSetLayout, descriptorSetLayout,
         descriptorSetLayout2, descriptorSetLayout2
@@ -625,6 +645,7 @@ void VulkanApplication::createDescriptorSets() {
         throw std::runtime_error("failed to allocate descriptor sets!");
     }
 
+    //SET 2
     std::vector<VkDescriptorSetLayout> characterLayouts(MAX_FRAMES_IN_FLIGHT * characters.size());
     for(int i = 0; i < MAX_FRAMES_IN_FLIGHT * characters.size(); i++){
         characterLayouts[i] = descriptorSetLayoutCharacter;
@@ -644,6 +665,7 @@ void VulkanApplication::createDescriptorSets() {
         throw std::runtime_error("failed to allocate descriptor sets character!");
     }
 
+    //SET 3
     std::vector<VkDescriptorSetLayout> characterSamplerLayout {
         descriptorSetLayoutCharacterSampler, descriptorSetLayoutCharacterSampler
     };
@@ -656,27 +678,46 @@ void VulkanApplication::createDescriptorSets() {
 
     descriptorSetsCharacterSampler.resize(MAX_FRAMES_IN_FLIGHT);
     if (vkAllocateDescriptorSets(device, &allocInfoCharacterSampler, descriptorSetsCharacterSampler.data()) != VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate descriptor sets character!");
+        throw std::runtime_error("failed to allocate descriptor sets character sampler!");
+    }
+    
+    //SET 4
+    std::vector<VkDescriptorSetLayout> tileLayout {
+        descriptorSetLayoutTile, descriptorSetLayoutTile
+    };
+    
+    VkDescriptorSetAllocateInfo allocInfoTile{};
+    allocInfoTile.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfoTile.descriptorPool = descriptorPool;
+    allocInfoTile.descriptorSetCount = static_cast<uint32_t>(tileLayout.size());
+    allocInfoTile.pSetLayouts = tileLayout.data();
+    
+    descriptorSetsTile.resize(MAX_FRAMES_IN_FLIGHT);
+    if (vkAllocateDescriptorSets(device, &allocInfoTile, descriptorSetsTile.data()) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate descriptor sets tile!");
     }
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        //SET 0 per frame
         VkDescriptorBufferInfo bufferInfo{};
         bufferInfo.buffer = uniformBuffers[i];
         bufferInfo.offset = 0;
         bufferInfo.range = sizeof(UniformBufferObject);
         
-        std::vector<VkDescriptorBufferInfo> characterInfo(characters.size());
-        for(int s = 0; s < characters.size(); s++){
-            characterInfo[s].buffer = characterUniformBuffers[(s*MAX_FRAMES_IN_FLIGHT)+i];
-            characterInfo[s].offset = 0;
-            characterInfo[s].range = sizeof(UniformBufferObject);
-        } 
-        
         VkDescriptorImageInfo imageInfo{};
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         imageInfo.imageView = textureImageView;
         imageInfo.sampler = textureSampler;
+
+        //SET 2 per frame
+        std::vector<VkDescriptorBufferInfo> characterInfo(characters.size());
+        for(int s = 0; s < characters.size(); s++){
+            characterInfo[s].buffer = characterUniformBuffers[(s*MAX_FRAMES_IN_FLIGHT)+i];
+            characterInfo[s].offset = 0;
+            characterInfo[s].range = sizeof(UniformBufferObjectCharacter);
+        } 
         
+        //SET 1 per frame
         std::cout << "imageSamplers size: " << textureSamplers.size() << std::endl;
         std::cout << "textureImages " << textureImages.size() << std::endl;
         std::vector<VkDescriptorImageInfo> imageInfos(textureImages.size());
@@ -686,12 +727,20 @@ void VulkanApplication::createDescriptorSets() {
             imageInfos[x].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         }
         
+        //SET 3 per frame
         std::vector<VkDescriptorImageInfo> characterImageInfos(characterImages.size());
         for (size_t x = 0; x < characterImages.size(); x++){
             characterImageInfos[x].sampler = characterSamplers[x];
             characterImageInfos[x].imageView = characterImageViews[x];
             characterImageInfos[x].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         }
+
+        //SET 4 perframe
+        VkDescriptorBufferInfo tileBufferInfo{};
+        bufferInfo.buffer = tileUniformBuffers[i];
+        bufferInfo.offset = 0;
+        bufferInfo.range = sizeof(UniformBufferObjectTile);
+        std::cout << "DEBUG CREATE DESCRIPTOR SET" << std::endl;
         
         int tex_count = static_cast<int>(textureImages.size());
         if(tex_count == 0){
@@ -728,7 +777,6 @@ void VulkanApplication::createDescriptorSets() {
         }
         
         for(int s = 0; s < characters.size(); s++){
-            int desc_idx = 4 + (2 * s) + i;
             descriptorWrites[2+textureImages.size()+s].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             descriptorWrites[2+textureImages.size()+s].dstSet = descriptorSetsCharacter[(s*MAX_FRAMES_IN_FLIGHT)+i];
             descriptorWrites[2+textureImages.size()+s].dstBinding = 0;
@@ -748,9 +796,9 @@ void VulkanApplication::createDescriptorSets() {
             descriptorWrites[2+textureImages.size()+characters.size()+s].pImageInfo = &characterImageInfos[s];
         }
         
-        std::cout << "DEBUG CREATE DESCRIPTOR SET" << std::endl;
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
+    // gui.setUVMap(descriptorSets[2]);
 }
 
 void VulkanApplication::createSyncObjects() {
@@ -811,6 +859,11 @@ void VulkanApplication::cleanup() {
         vkFreeMemory(device, characterUniformBuffersMemory[i], nullptr);
     }
 
+    for (size_t i = 0; i < tileUniformBuffers.size(); i++){
+        vkDestroyBuffer(device, tileUniformBuffers[i], nullptr);
+        vkFreeMemory(device, tileUniformBuffersMemory[i], nullptr);
+    }
+
     std::cout << "DEBUG CLEANUP 1" << std::endl;
     vkDestroyDescriptorPool(device, descriptorPool, nullptr);
 
@@ -820,22 +873,36 @@ void VulkanApplication::cleanup() {
         vkDestroyImage(device, textureImages[i], nullptr);
         vkFreeMemory(device, textureImageMemorys[i], nullptr);
     }
-
     vkDestroySampler(device, textureSampler, nullptr);
     vkDestroyImageView(device, textureImageView, nullptr);
 
     vkDestroyImage(device, textureImage, nullptr);
     vkFreeMemory(device, textureImageMemory, nullptr);
 
+    for (int i = 0; i < characterImages.size(); i++) {
+        vkDestroySampler(device, characterSamplers[i], nullptr);
+        vkDestroyImageView(device, characterImageViews[i], nullptr);
+        vkDestroyImage(device, characterImages[i], nullptr);
+        vkFreeMemory(device, characterImageMemorys[i], nullptr);
+    }
+
     vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
     vkDestroyDescriptorSetLayout(device, descriptorSetLayout2, nullptr);
     vkDestroyDescriptorSetLayout(device, descriptorSetLayoutCharacter, nullptr);
+    vkDestroyDescriptorSetLayout(device, descriptorSetLayoutCharacterSampler, nullptr);
+    vkDestroyDescriptorSetLayout(device, descriptorSetLayoutTile, nullptr);
 
     vkDestroyBuffer(device, indexBuffer, nullptr);
     vkFreeMemory(device, indexBufferMemory, nullptr);
 
     vkDestroyBuffer(device, vertexBuffer, nullptr);
     vkFreeMemory(device, vertexBufferMemory, nullptr);
+
+    vkDestroyBuffer(device, vertexBuffer1, nullptr);
+    vkFreeMemory(device, vertexBufferMemory1, nullptr);
+
+    vkDestroyBuffer(device, vertexBufferTile, nullptr);
+    vkFreeMemory(device, vertexBufferMemoryTile, nullptr);
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);

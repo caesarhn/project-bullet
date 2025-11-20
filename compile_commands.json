@@ -6,8 +6,8 @@
 },
 {
   "directory": "/home/caesar/game-dev/project-bullet",
-  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/lib/ui.cpp.o -c /home/caesar/game-dev/project-bullet/lib/ui.cpp",
-  "file": "/home/caesar/game-dev/project-bullet/lib/ui.cpp"
+  "command": "g++  -I/home/caesar/vulkansdk/x86_64/include -I/home/caesar/game-dev/project-bullet/imgui-master -I/home/caesar/game-dev/project-bullet/glm-master -I/home/caesar/game-dev/project-bullet/lib -std=gnu++17 -o CMakeFiles/vulkan_new.dir/lib/ui/ui.cpp.o -c /home/caesar/game-dev/project-bullet/lib/ui/ui.cpp",
+  "file": "/home/caesar/game-dev/project-bullet/lib/ui/ui.cpp"
 },
 {
   "directory": "/home/caesar/game-dev/project-bullet",

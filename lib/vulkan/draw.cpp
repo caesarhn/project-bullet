@@ -1,4 +1,5 @@
 #include <vulkan/init.h>
+#include <logic/logic.h>
 
 void VulkanApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
     VkCommandBufferBeginInfo beginInfo{};
@@ -27,7 +28,7 @@ void VulkanApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint3
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
         VkViewport viewport{};
-        viewport.x = 400.0f;
+        viewport.x = 0.0f;
         viewport.y = 0.0f;
         viewport.width = (float) swapChainExtent.width;
         viewport.height = (float) swapChainExtent.height;
@@ -42,27 +43,81 @@ void VulkanApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint3
         
         VkBuffer vertexBuffers[] = {vertexBuffer};
         VkBuffer vertexBuffers1[] = {vertexBuffer1};
+        VkBuffer vertexBufferTiles[] = {vertexBufferTile};
         VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
-
+        // vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+        
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &descriptorSets[currentFrame + 2], 0, nullptr);
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 2, 1, &descriptorSetsCharacter[currentFrame], 0, nullptr);
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 3, 1, &descriptorSetsCharacterSampler[currentFrame], 0, nullptr);
-        std::cout << "DEBUG Record Command Buffer" << std::endl;
-        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers1, offsets);
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 2, 1, &descriptorSetsCharacter[currentFrame+2], 0, nullptr);
-        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-        
-        VkBuffer vertexBufferss[] = {vertexBuffer1};
-        VkDeviceSize offset1[] = {0};
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBufferss, offset1);
-        
-        // updateUniformBuffer(currentFrame);
+        // std::cout << "DEBUG Record Command Buffer " << swapChainExtent.width <<std::endl;
         // vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+
+        // vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 2, 1, &descriptorSetsCharacter[currentFrame+2], 0, nullptr);
+        // vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+        
+        // vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 2, 1, &descriptorSetsCharacter[currentFrame+4], 0, nullptr);
+        // vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+        
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers1, offsets);
+        vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+        for(int i = 0; i < characters.size(); i++){
+            if(charactersAttribute[i].isRender == true){
+                // std::cout << "debug drawing: " << characters[i].controlAnimation[0] << " " << characters[i].controlAnimation[1] << std::endl;
+                vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 2, 1, &descriptorSetsCharacter[currentFrame+(2*i)], 0, nullptr);
+                vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+            }
+        }
+
+        std::cout << 
+        ubo.view[0][0] << "  " << ubo.view[1][0] << "  " << ubo.view[2][0] << "  " << ubo.view[3][0] << std::endl <<
+        ubo.view[0][1] << "  " << ubo.view[1][1] << "  " << ubo.view[2][1] << "  " << ubo.view[3][1] << std::endl <<
+        ubo.view[0][2] << "  " << ubo.view[1][2] << "  " << ubo.view[2][2] << "  " << ubo.view[3][2] << std::endl <<
+        ubo.view[0][3] << "  " << ubo.view[1][3] << "  " << ubo.view[2][3] << "  " << ubo.view[3][3] << std::endl <<
+        std::endl;
+
+        std::cout << 
+        ubo.projection[0][0] << "  " << ubo.projection[1][0] << "  " << ubo.projection[2][0] << "  " << ubo.projection[3][0] << std::endl <<
+        ubo.projection[0][1] << "  " << ubo.projection[1][1] << "  " << ubo.projection[2][1] << "  " << ubo.projection[3][1] << std::endl <<
+        ubo.projection[0][2] << "  " << ubo.projection[1][2] << "  " << ubo.projection[2][2] << "  " << ubo.projection[3][2] << std::endl <<
+        ubo.projection[0][3] << "  " << ubo.projection[1][3] << "  " << ubo.projection[2][3] << "  " << ubo.projection[3][3] << std::endl <<
+
+        std::endl;
+
+        for(int i =0; i < 3; i++){
+            std::cout << "ANJAAAIII " << i << std::endl;
+            std::cout << " " << charactersAttribute[i].isRender << " " << charactersAttribute[i].position.x << std::endl;
+
+            std::cout << "animation detail: " << 
+                characters[i].animationDetail.x << " " <<
+                characters[i].animationDetail.y << " " <<
+                " animation control: " <<
+                characters[i].controlAnimation[0] << " " <<
+                characters[i].controlAnimation[1] << " " <<
+                characters[i].controlAnimation[2] << " " <<
+                characters[i].controlAnimation[3] << "      " <<
+                characters[i].model[3][0] << " " <<
+                characters[i].model[3][1] << " " <<
+                characters[i].model[3][2] << " "
+            << std::endl;
+        }
+
+
+        std::cout << " " << sizeof(UniformBufferObject) << " " << sizeof(UniformBufferObjectCharacter)<< std::endl;
+        std::cout << " " << sizeof(uniformBuffers[0]) << " " << sizeof(characterUniformBuffers[0])<< std::endl;
+        std::cout << " " << sizeof(uniformBuffersMemory[0]) << " " << sizeof(characterUniformBuffersMemory[0])<< std::endl;
+        std::cout << " " << sizeof(uniformBuffersMapped) << " " << sizeof(characterUniformBuffersMapped)<< std::endl;
+
+        glm::mat4 result = ubo.projection * ubo.view * defaultModel;
+        glm::vec4 nana = result * glm::vec4(-2.0f, 3.0f, 0.0f, 1.0f);
+        std::cout << 
+        result[0][0] << "  " << result[1][0] << "  " << result[2][0] << "  " << result[3][0] << std::endl <<
+        result[0][1] << "  " << result[1][1] << "  " << result[2][1] << "  " << result[3][1] << std::endl <<
+        result[0][2] << "  " << result[1][2] << "  " << result[2][2] << "  " << result[3][2] << std::endl <<
+        result[0][3] << "  " << result[1][3] << "  " << result[2][3] << "  " << result[3][3] << std::endl;
+
+        std::cout << "output" << glm::to_string(nana);
+
 
         #ifdef __ANDROID__
         #else
@@ -82,38 +137,15 @@ void VulkanApplication::updateUniformBuffer(uint32_t currentImage) {
         auto currentTime = std::chrono::high_resolution_clock::now();
         float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-        //perspective
-        // UniformBufferObject ubo{};
-        // ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        // ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        // ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 10.0f);
-        // ubo.proj[1][1] *= -1;
-        // ubo.set_and_binding = texture_set_binding;
+        memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(UniformBufferObject));
 
-        // UniformBufferObject ubo{};
-        // ubo.model = glm::mat4(1.0f);
-        // ubo.view = glm::lookAt(
-        //     glm::vec3(0.0f, 0.0f, 5.0f), // Posisi kamera (x, y, z)
-        //     glm::vec3(0.0f, 0.0f, 0.0f), // Arah kamera (target)
-        //     glm::vec3(0.0f, 1.0f, 0.0f)  // Up vector (ke atas)
-        // );
-        // ubo.proj = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, 0.1f, 100.0f);
-        // ubo.proj[1][1] *= -1;
-        if(updateModel == 1){
-
+        memcpy(characterUniformBuffersMapped[currentImage], &characters[0], sizeof(UniformBufferObjectCharacter));
+        memcpy(characterUniformBuffersMapped[currentImage+2], &characters[1], sizeof(UniformBufferObjectCharacter));
+        memcpy(characterUniformBuffersMapped[currentImage+4], &characters[2], sizeof(UniformBufferObjectCharacter));
+        for(int i = 3; i < characters.size(); i++){
+            memcpy(characterUniformBuffersMapped[currentImage+(i*2)], &characters[i], sizeof(UniformBufferObjectCharacter));
         }
-
-        // ubo.set_and_binding = texture_set_binding;
-        // ubo2.set_and_binding = texture_set_binding;
-        characters[0].set_and_binding = texture_set_binding;
-        // characters[1].set_and_binding = glm::vec2(1.0f, 1.0f);
-        // characters[1].playerState = glm::vec2(1.0f, 0.0f); 
-
-        memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
-
-        memcpy(characterUniformBuffersMapped[currentImage], &characters[0], sizeof(ubo));
-        memcpy(characterUniformBuffersMapped[currentImage+2], &characters[1], sizeof(ubo));
-        std::cout << "Current frame: " << currentImage << std::endl;
+        std::cout << "Current frame: " << currentImage << " "<< std::endl;
     }
 
 void VulkanApplication::drawFrame() {
@@ -181,72 +213,102 @@ void VulkanApplication::drawFrame() {
 }
 
 void VulkanApplication::mainLoop() {
-    #ifdef __ANDROID__
-    int frame = 0;
-    float animationFrame = 1.0f;
-    auto lastFrameTime = std::chrono::high_resolution_clock::now();
+    // #ifdef __ANDROID__
+    // int frame = 0;
+    // float animationFrame = 1.0f;
+    // auto lastFrameTime = std::chrono::high_resolution_clock::now();
     
-    while (!androidExitMainLoop) {
-        // Frame timing (sama seperti desktop)
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        double elapsedTime = std::chrono::duration<double>(currentTime - lastFrameTime).count();
+    // while (!androidExitMainLoop) {
+    //     // Frame timing (sama seperti desktop)
+    //     auto currentTime = std::chrono::high_resolution_clock::now();
+    //     double elapsedTime = std::chrono::duration<double>(currentTime - lastFrameTime).count();
         
-        if (elapsedTime < FRAME_TIME) {
-            std::this_thread::sleep_for(std::chrono::duration<double>(FRAME_TIME - elapsedTime));
-        }
+    //     if (elapsedTime < FRAME_TIME) {
+    //         std::this_thread::sleep_for(std::chrono::duration<double>(FRAME_TIME - elapsedTime));
+    //     }
         
-        lastFrameTime = std::chrono::high_resolution_clock::now();
+    //     lastFrameTime = std::chrono::high_resolution_clock::now();
         
-        // Process Android events (menggantikan glfwPollEvents)
-        // processAndroidEvents();
+    //     // Process Android events (menggantikan glfwPollEvents)
+    //     // processAndroidEvents();
         
-        // Animation logic (SAMA PERSIS dengan desktop)
-        // if(frame == 12){
-            //     ubo.animationIdx = animationFrame;
+    //     // Animation logic (SAMA PERSIS dengan desktop)
+    //     // if(frame == 12){
+    //         //     ubo.animationIdx = animationFrame;
             
-            //     if(animationFrame == 8){
-        //         animationFrame = 1;
-        //     } else {
-            //         animationFrame++;
-            //     }
-        // }
+    //         //     if(animationFrame == 8){
+    //     //         animationFrame = 1;
+    //     //     } else {
+    //         //         animationFrame++;
+    //         //     }
+    //     // }
 
-        // Execute World Logic (SAMA PERSIS dengan desktop)
-        if(animationMovement == 1 && frame == 12){
-            texture_set_binding[0] = 1;
-            if(texture_set_binding[1] < TEXTURE_WALK_OFFSET || texture_set_binding[1] > TEXTURE_WALK_MAX_IDX){
-                texture_set_binding[1] = TEXTURE_WALK_OFFSET - 1;
-            }
-            texture_set_binding[1] = texture_set_binding[1] + 1;
-            // LOGI("texture bind : %d %d", texture_set_binding[0], texture_set_binding[1]);
-            frame = 0;
-        }
-        else if(animationMovement == 0 && frame == 10){
-            texture_set_binding[1] = texture_set_binding[1] + 1;
-            texture_set_binding[0] = 1;
-            // LOGI("texture bind : %d %d", texture_set_binding[0], texture_set_binding[1]);
-            if(texture_set_binding[1] >= textureAsset.size()){
-                texture_set_binding[1] = 0;
-            }
-            frame = 0;
-        }
+    //     // Execute World Logic (SAMA PERSIS dengan desktop)
+    //     if(animationMovement == 1 && frame == 12){
+    //         texture_set_binding[0] = 1;
+    //         if(texture_set_binding[1] < TEXTURE_WALK_OFFSET || texture_set_binding[1] > TEXTURE_WALK_MAX_IDX){
+    //             texture_set_binding[1] = TEXTURE_WALK_OFFSET - 1;
+    //         }
+    //         texture_set_binding[1] = texture_set_binding[1] + 1;
+    //         // LOGI("texture bind : %d %d", texture_set_binding[0], texture_set_binding[1]);
+    //         frame = 0;
+    //     }
+    //     else if(animationMovement == 0 && frame == 10){
+    //         texture_set_binding[1] = texture_set_binding[1] + 1;
+    //         texture_set_binding[0] = 1;
+    //         // LOGI("texture bind : %d %d", texture_set_binding[0], texture_set_binding[1]);
+    //         if(texture_set_binding[1] >= textureAsset.size()){
+    //             texture_set_binding[1] = 0;
+    //         }
+    //         frame = 0;
+    //     }
         
-        frame++;
-        if(frame == 60){
-            frame = 0;
-        }
-        updateUiData();
-        drawFrame();
-    }
+    //     frame++;
+    //     if(frame == 60){
+    //         frame = 0;
+    //     }
+    //     updateUiData();
+    //     drawFrame();
+    // }
     
-    vkDeviceWaitIdle(device);
-    #else
+    // vkDeviceWaitIdle(device);
+    // #else
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
     int frame = 0;
     int animationFrame = 0;
+    int walk_frame = 0;
+    int animationWalk = 0;
+    int idleDirection = 0;
+
+    //random
+    std::random_device rd;                 // sumber random
+    std::mt19937 gen(rd());                // generator Mersenne Twister
+    std::uniform_int_distribution<> dist(0, 4);
+    std::uniform_int_distribution<> walks(0, 10);
+    std::uniform_int_distribution<> xy(0, 1);
+    float into = 0.0f;
+    int x_or_y = xy(gen);
+    int x = dist(gen);
+    glm::vec3 translateRandom = glm::vec3(0.0f, 0.0f, 0.0f);
+    int randomContainer;
+
+    //world
+    WorldLevel world;
+
+    Walk walked_down{9};
+    Walk walked_up{9};
+    Walk walked_right{9};
+    Walk walked_left{9};
+
+    Walk idle{7};
+
+    charactersAttribute[0].isRender = true;
+    charactersAttribute[1].isRender = true;
+    charactersAttribute[2].isRender = true;
+
     while (!glfwWindowShouldClose(window)) {
         float xx = 2.0f;
-        std::cout << "PLAYER STATE: " << characters[0].playerState[0] << " " << characters[1].playerState[0] << std::endl;
+        // std::cout << "PLAYER STATE: " << characters[1].playerState[0] << " " << characters[1].playerState[1] << std::endl;
         // limit framerate
         auto currentTime = std::chrono::high_resolution_clock::now();
         double elapsedTime = std::chrono::duration<double>(currentTime - lastFrameTime).count();
@@ -258,45 +320,95 @@ void VulkanApplication::mainLoop() {
         lastFrameTime = std::chrono::high_resolution_clock::now();
         glfwPollEvents();
         // processInput();
-        std::cout << frame;
+        // std::cout << frame << " LOCKGUI " << lockgui << std::endl;
 
-        if(frame == 10){
-            ubo.animationIdx = glm::vec4(animationFrame, 0.0f, 0.0f, 0.0f);
-            // characters[0].playerState = glm::vec4(10.0f, 0.0f, 0.0f, 0.0f);
-            
-            if(animationFrame == 8){
-                animationFrame = 0;
-            }else{
-                characters[1].playerState = glm::vec4(1.0f, (float)(animationFrame), 0.0f, 0.0f);
-                animationFrame++;
-                std::cout << "idle animation: " << characters[1].playerState[1] << std::endl;
+        if(lockgui == false){
+            if(characters[1].controlAnimation[1] == 0.0f){
+                charactersAttribute[1].idle.animate(&characters[1].controlAnimation[3]);
+            }
+            else if(characters[1].controlAnimation[1] == 1.0f){
+                charactersAttribute[1].walk.animate(&characters[1].controlAnimation[3]);
             }
         }else{
-            // characters[0].playerState = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
-            // characters[1].playerState = glm::vec4(10.0f, 0.0f, 0.0f, 0.0f);
-        }
-        
-        // Execute World Logic
-        if(animationMovement == 1 && frame == 12){
-            texture_set_binding[0] = 1;
-            if(texture_set_binding[1] < TEXTURE_WALK_OFFSET || texture_set_binding[1] > TEXTURE_WALK_MAX_IDX){
-                texture_set_binding[1] = TEXTURE_WALK_OFFSET - 1;
+            characters[1].animationDetail = glm::vec4(4.0f, 10.0f, 0.0f, 0.0f);
+            characters[1].controlAnimation[0] = 1.0f;
+            if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+                characters[1].controlAnimation[1] = CHARACTER_WALK_DOWN;
+                charactersAttribute[1].walk.animate(&characters[1].controlAnimation[3]);
+                characters[1].model = glm::translate(characters[1].model, glm::vec3(0.0f, 0.05f, 0.0f));
+                idleDirection = 0;
             }
-            texture_set_binding[1] = texture_set_binding[1] + 1;
-            // std::cout << " texture bind : "<< texture_set_binding[0] << " "  << texture_set_binding[1];
-            // ubo.model = glm::translate(ubo.model, glm::vec3(0.1f, 0.0f, 0.0f));
-            frame = 0;
-        }
-        else if(animationMovement == 0 && frame == 10){
-            texture_set_binding[1] = texture_set_binding[1] + 1;
-            texture_set_binding[0] = 1;
-            // std::cout << " texture bind : " << texture_set_binding[0] << " " << texture_set_binding[1];
-            if(texture_set_binding[1] >= textureAsset.size()){
-                texture_set_binding[1] = 0;
+            if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
+                characters[1].controlAnimation[1] = CHARACTER_WALK_LEFT;
+                charactersAttribute[1].walk.animate(&characters[1].controlAnimation[3]);
+                characters[1].model = glm::translate(characters[1].model, glm::vec3(0.05f, 0.0f, 0.0f));
+                idleDirection = 1;
             }
-            frame = 0;
+            else if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
+                characters[1].controlAnimation[1] = CHARACTER_WALK_RIGHT;
+                charactersAttribute[1].walk.animate(&characters[1].controlAnimation[3]);
+                characters[1].model = glm::translate(characters[1].model, glm::vec3(-0.05f, 0.0f, 0.0f));
+                idleDirection = 2;
+            }
+            if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
+                // std::cout << "WWWWWW" << std::endl;
+                characters[1].controlAnimation[1] = CHARACTER_WALK_UP;
+                charactersAttribute[1].walk.animate(&characters[1].controlAnimation[3]);
+                characters[1].model = glm::translate(characters[1].model, glm::vec3(0.0f, -0.05f, 0.0f));
+                idleDirection = 3;
+            }
+            if(
+                glfwGetKey(window, GLFW_KEY_W) != GLFW_PRESS &&
+                glfwGetKey(window, GLFW_KEY_A) != GLFW_PRESS &&
+                glfwGetKey(window, GLFW_KEY_S) != GLFW_PRESS &&
+                glfwGetKey(window, GLFW_KEY_D) != GLFW_PRESS
+            ){
+                characters[1].animationDetail = glm::vec4(4.0f, 8.0f, 0.0f, 0.0f);
+                std::cout << "IDLE" << std::endl;
+                characters[1].controlAnimation[0] = CHARACTER_IDLE;
+                characters[1].controlAnimation[1] = (float)(idleDirection);
+                charactersAttribute[1].idle.animate(&characters[1].controlAnimation[3]);
+            }
         }
-        std::cout << " " << std::endl;
+
+        //non player
+        for(int i = 3; i < 20; i++){
+            characters[i].animationDetail = glm::vec4(4.0f, 10.0f, 0.0f, 0.0f);
+            randomContainer = dist(gen);
+            characters[i].controlAnimation[0] = CHARACTER_WALK;
+            if(randomContainer == 0){
+                translateRandom.y = -0.05f;
+            }
+            else if(randomContainer == 1){
+                translateRandom.x = -0.05f;
+            }
+            else if(randomContainer == 2){
+                translateRandom.x = 0.05f;
+            }
+            else if(randomContainer == 4){
+                translateRandom.y = 0.05f;
+            }
+            charactersAttribute[i].direction = randomContainer;
+            characters[i].model = glm::translate(defaultModel, translateRandom);
+
+            characters[i].controlAnimation[1] = (float)(charactersAttribute[i].direction);
+            charactersAttribute[i].walk.animate(&characters[i].controlAnimation[3]);
+
+            translateRandom.x = 0.0f;
+            translateRandom.y = 0.0f;
+        }
+
+        characters[0].animationDetail = glm::vec4(4.0f, 8.0f, 0.0f, 0.0f);
+        characters[0].controlAnimation[0] = CHARACTER_IDLE;
+        characters[0].controlAnimation[1] = (float)(idleDirection);
+        characters[0].model = glm::translate(defaultModel, glm::vec3(0.0f, 0.0001f, 0.0f));
+        charactersAttribute[0].idle.animate(&characters[0].controlAnimation[3]);
+
+        characters[2].animationDetail = glm::vec4(4.0f, 8.0f, 0.0f, 0.0f);
+        characters[2].controlAnimation[0] = CHARACTER_IDLE;
+        characters[2].controlAnimation[1] = (float)(idleDirection);
+        characters[2].model = glm::translate(defaultModel, glm::vec3(0.0f, 0.0001f, 0.0f));
+        charactersAttribute[2].idle.animate(&characters[2].controlAnimation[3]);
 
         frame++;
         if(frame == 60){
@@ -306,6 +418,6 @@ void VulkanApplication::mainLoop() {
         drawFrame();
     }
     vkDeviceWaitIdle(device);
-    #endif
+    // #endif
     std::cout << "MAIN LOOP DEBUG" << std::endl;
 }

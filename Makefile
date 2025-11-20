@@ -345,29 +345,29 @@ lib/char/char.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/char/char.cpp.s
 .PHONY : lib/char/char.cpp.s
 
-lib/ui.o: lib/ui.cpp.o
-.PHONY : lib/ui.o
+lib/ui/ui.o: lib/ui/ui.cpp.o
+.PHONY : lib/ui/ui.o
 
 # target to build an object file
-lib/ui.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/ui.cpp.o
-.PHONY : lib/ui.cpp.o
+lib/ui/ui.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/ui/ui.cpp.o
+.PHONY : lib/ui/ui.cpp.o
 
-lib/ui.i: lib/ui.cpp.i
-.PHONY : lib/ui.i
+lib/ui/ui.i: lib/ui/ui.cpp.i
+.PHONY : lib/ui/ui.i
 
 # target to preprocess a source file
-lib/ui.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/ui.cpp.i
-.PHONY : lib/ui.cpp.i
+lib/ui/ui.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/ui/ui.cpp.i
+.PHONY : lib/ui/ui.cpp.i
 
-lib/ui.s: lib/ui.cpp.s
-.PHONY : lib/ui.s
+lib/ui/ui.s: lib/ui/ui.cpp.s
+.PHONY : lib/ui/ui.s
 
 # target to generate assembly for a file
-lib/ui.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/ui.cpp.s
-.PHONY : lib/ui.cpp.s
+lib/ui/ui.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/ui/ui.cpp.s
+.PHONY : lib/ui/ui.cpp.s
 
 lib/vulkan/buffer.o: lib/vulkan/buffer.cpp.o
 .PHONY : lib/vulkan/buffer.o
@@ -597,9 +597,9 @@ help:
 	@echo "... lib/char/char.o"
 	@echo "... lib/char/char.i"
 	@echo "... lib/char/char.s"
-	@echo "... lib/ui.o"
-	@echo "... lib/ui.i"
-	@echo "... lib/ui.s"
+	@echo "... lib/ui/ui.o"
+	@echo "... lib/ui/ui.i"
+	@echo "... lib/ui/ui.s"
 	@echo "... lib/vulkan/buffer.o"
 	@echo "... lib/vulkan/buffer.i"
 	@echo "... lib/vulkan/buffer.s"

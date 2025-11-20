@@ -12,8 +12,10 @@
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 // #define STB_IMAGE_IMPLEMENTATION
 // #include <stb_image.h>
@@ -33,22 +35,28 @@
 #include <set>
 #include <stdexcept>
 #include <thread>
+#include <random>
 
-#include <ui.h>
+#include <ui/ui.h>
+#include <levels/level.h>
+#include <logic/logic.h>
 
 class VulkanApplication
 {
 private:
 
-    const uint32_t WIDTH = 800;
-    const uint32_t HEIGHT = 600;
+    const uint32_t WIDTH = 1280;
+    const uint32_t HEIGHT = 720;
 
-    //constant logic
-    const float CHARACTER_IDLE = 1.0f;
+    //constant logic animation
+    const float CHARACTER_IDLE = 0.0f;
+    const float CHARACTER_WALK = 1.0f;
+
+    //sub animation
+    const float CHARACTER_WALK_DOWN = 0.0f;
+    const float CHARACTER_WALK_LEFT = 1.0f;
     const float CHARACTER_WALK_RIGHT = 2.0f;
-    const float CHARACTER_WALK_DOWN = 3.0f;
-    const float CHARACTER_WALK_LEFT = 4.0f;
-    const float CHARACTER_WALK_UP = 5.0f;
+    const float CHARACTER_WALK_UP = 3.0f;
     
     // Batas FPS
     bool androidExitMainLoop = false;
@@ -171,13 +179,32 @@ private:
     };
     
     struct UniformBufferObject {
-        alignas(16) glm::mat4 model;
         alignas(16) glm::mat4 view;
-        alignas(16) glm::mat4 proj;
-        alignas(16) glm::vec4 set_and_binding;
-        alignas(16) glm::vec4 playerState;
-        alignas(16) glm::vec4 animationIdx;
+        alignas(16) glm::mat4 projection;
     };
+
+    struct UniformBufferObjectCharacter {
+        alignas(16) glm::mat4 model;
+        alignas(16) glm::vec4 controlAnimation; //vec4(state, sub_state, null, animate_frame)
+        alignas(16) glm::vec4 animationDetail; //vec4(total_sub_state, total_frame, null, null)
+    };
+
+    struct UniformBufferObjectTile {
+        alignas(16) glm::vec4 area; // vec4()
+    };
+
+    struct CharacterAttribute {
+        bool isRender;
+        float walkSpeed;
+        int direction;
+        Animation idle;
+        Animation walk;
+        glm::vec2 position;
+        glm::vec2 scale;
+
+        CharacterAttribute(int idle, int walk) : idle(idle), walk(walk) {}
+    };
+
     const glm::mat4 defaultModel = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     const std::vector<glm::vec4> sub_texture_map = {
         {0.0f, 0.0f, 0.1f, 0.1f},
@@ -193,6 +220,8 @@ private:
     
     std::vector<Vertex> vertices;
     std::vector<Vertex> vertices2;
+    std::vector<Vertex> tileBlock;
+
     struct Object{
         std::string id;
         std::vector<Vertex2> vertices;
@@ -205,6 +234,9 @@ private:
     #else
         GLFWwindow* window = nullptr;
     #endif
+
+    //game level
+    Level gameLevel;
 
     //for UI section
     Gui gui;
@@ -228,31 +260,27 @@ private:
     std::vector<VkFramebuffer> swapChainFramebuffers;
 
     VkRenderPass renderPass;
-    VkDescriptorSetLayout descriptorSetLayout;
-    VkDescriptorSetLayout descriptorSetLayout2;
-    VkDescriptorSetLayout descriptorSetLayoutCharacter;
-    VkDescriptorSetLayout descriptorSetLayoutCharacterSampler;
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
-
+    
     VkCommandPool commandPool;
-
+    
     VkImage depthImage;
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
-
+    
     //experimental texture image
     std::vector<VkImage> textureImages;
     std::vector<VkDeviceMemory> textureImageMemorys;
     std::vector<VkImageView> textureImageViews;
     std::vector<VkSampler> textureSamplers;
-
+    
     //character texture
     std::vector<VkImage> characterImages;
     std::vector<VkDeviceMemory> characterImageMemorys;
     std::vector<VkImageView> characterImageViews;
     std::vector<VkSampler> characterSamplers;
-
+    
     VkImage textureImage;
     VkDeviceMemory textureImageMemory;
     VkImageView textureImageView;
@@ -264,32 +292,47 @@ private:
     VkDeviceMemory vertexBufferMemory1;
     VkBuffer indexBuffer;
     VkDeviceMemory indexBufferMemory;
-
+    
+    VkBuffer vertexBufferTile;
+    VkDeviceMemory vertexBufferMemoryTile;
+    
     //list vertex buffer
     std::vector<VkBuffer> vertexBuffers;
     std::vector<VkDeviceMemory> vertexBufferMemorys;
     std::vector<VkBuffer> indexBuffers;
     std::vector<VkDeviceMemory> indexBufferMemorys;
-
+    
     std::vector<VkBuffer> vertexBufferPool;
     std::vector<VkDeviceMemory> vertexBufferMemoryPool;
     std::vector<VkBuffer> indexBufferPool;
     std::vector<VkDeviceMemory> indexBufferMemoryPool;
-
+    
+    //uniform
     std::vector<VkBuffer> uniformBuffers;
     std::vector<VkDeviceMemory> uniformBuffersMemory;
     std::vector<void*> uniformBuffersMapped;
-
+    
     std::vector<VkBuffer> characterUniformBuffers;
     std::vector<VkDeviceMemory> characterUniformBuffersMemory;
     std::vector<void*> characterUniformBuffersMapped;
 
+    std::vector<VkBuffer> tileUniformBuffers;
+    std::vector<VkDeviceMemory> tileUniformBuffersMemory;
+    std::vector<void*> tileUniformBuffersMapped;
+    
     VkDescriptorPool descriptorPool;
     VkDescriptorPool imguiDescriptorPool;
     std::vector<VkDescriptorSet> descriptorSets;
     std::vector<VkDescriptorSet> descriptorSetsCharacter;
     std::vector<VkDescriptorSet> descriptorSetsCharacterSampler;
-
+    std::vector<VkDescriptorSet> descriptorSetsTile;
+    
+    VkDescriptorSetLayout descriptorSetLayout;
+    VkDescriptorSetLayout descriptorSetLayout2;
+    VkDescriptorSetLayout descriptorSetLayoutCharacter;
+    VkDescriptorSetLayout descriptorSetLayoutCharacterSampler;
+    VkDescriptorSetLayout descriptorSetLayoutTile;
+    
     std::vector<VkCommandBuffer> commandBuffers;
 
     std::vector<VkSemaphore> imageAvailableSemaphores;
@@ -297,10 +340,10 @@ private:
     std::vector<VkFence> inFlightFences;
     uint32_t currentFrame = 0;
 
-    glm::vec4 texture_set_binding = glm::vec4(0, 1, 0, 0);
     UniformBufferObject ubo{};
-    UniformBufferObject ubo2{};
-    std::vector<UniformBufferObject> characters;
+    UniformBufferObjectCharacter uboCharacter{};
+    std::vector<UniformBufferObjectCharacter> characters;
+    std::vector<CharacterAttribute> charactersAttribute;
 
     bool framebufferResized = false;
 

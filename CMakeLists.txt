@@ -54,7 +54,7 @@ endif()
 add_executable(
     vulkan_new 
     main.cpp 
-    lib/ui.cpp 
+    lib/ui/ui.cpp 
     imgui-master/imgui.cpp
     imgui-master/imgui_draw.cpp
     imgui-master/imgui_tables.cpp

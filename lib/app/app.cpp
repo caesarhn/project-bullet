@@ -5,7 +5,7 @@ Application::Application(){
     Vulkan = new VulkanApplication;
     Vulkan->initWindow();
     Vulkan->initVulkan();
-    Vulkan->initUbo();
+    // Vulkan->initUbo();
     Vulkan->mainLoop();
     Vulkan->cleanup();
 }
