@@ -74,6 +74,10 @@ add_executable(
     lib/app/app.cpp
 
     lib/char/char.cpp
+
+    lib/object/tools.cpp
+
+    lib/physics/physics.cpp
 )  # Nama output dan source files
 
 # Hubungkan dengan library Vulkan

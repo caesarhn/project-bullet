@@ -350,3 +350,8 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanApplication::debugCallback(VkDebugUtilsMess
 
     return VK_FALSE;
 }
+
+bool VulkanApplication::fileExists(const std::string& filename) {
+    std::ifstream f(filename, std::ios::binary);
+    return f.good();
+}

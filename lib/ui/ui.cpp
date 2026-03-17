@@ -27,45 +27,6 @@ void Gui::createImGuiDescriptorPool(VkDevice device){
     }
 }
 
-#ifdef __ANDROID__
-void Gui::initImGui(ANativeWindow *window, VkInstance instance, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue queue, uint32_t queueFamily, VkRenderPass renderPass){
-    // Setup ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    
-    // Disable .ini file saving di Android
-    io.IniFilename = nullptr;
-    
-    // Setup style
-    ImGui::StyleColorsDark();
-    
-    // Setup platform/renderer backends
-    ImGui_ImplAndroid_Init(window);
-    ImGui_ImplVulkan_InitInfo init_info = {};
-    init_info.Instance = instance;
-    init_info.PhysicalDevice = physicalDevice;
-    init_info.Device = device;
-    init_info.QueueFamily = queueFamily;
-    init_info.Queue = queue;
-    init_info.PipelineCache = VK_NULL_HANDLE;
-    init_info.DescriptorPool = imguiPool;
-    init_info.Subpass = 0;
-    init_info.MinImageCount = 2;
-    init_info.ImageCount = static_cast<uint32_t>(swapChainImages.size());
-    init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
-    init_info.Allocator = nullptr;
-    init_info.CheckVkResultFn = nullptr;
-    
-    ImGui_ImplVulkan_Init(&init_info);
-    
-    // Upload fonts
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-    ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
-    endSingleTimeCommands(commandBuffer);
-    ImGui_ImplVulkan_DestroyFontUploadObjects();
-}
-#else
 void Gui::initImGui(GLFWwindow *window, VkInstance instance, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue queue, uint32_t queueFamily, VkRenderPass renderPass){
     // 1. Buat context
     IMGUI_CHECKVERSION();
@@ -112,7 +73,10 @@ void Gui::initImGui(GLFWwindow *window, VkInstance instance, VkDevice device, Vk
     characterList.resize(2);
     characterList[1].loc[0] = 3.0f;
     characterList[1].loc[1] = 0.0f;
-#endif
+
+    charas[0] = 0.0f;
+    charas[1] = 0.0f;
+    charas[2] = 0.0f;
 }
 
 void Gui::recordImGuiCommands(VkCommandBuffer commandBuffer){
@@ -132,26 +96,19 @@ void Gui::renderUI(){
     if (ImGui::Checkbox("disable", &v)){
         guiEnableWindows[0] = v;        // simpan kembali hasilnya
     }
-    for(int i = 0; i < characterList.size(); i++){
-        ImGui::Text(("character" + std::to_string(i)).c_str());
-        ImGui::InputFloat("texture"+i, &characterList[i].textureIdx, 0.0f, 0.0f, "%.1f");
-        ImGui::InputFloat2("location"+i, characterList[i].loc, "%.1f");
-        ImGui::InputFloat("state"+i, &characterList[i].state);
-    }
+    ImGui::InputFloat3("loc", charas, "%.1f");
+
     bool uv = isUVMap;
     if (ImGui::Checkbox("uv map", &uv)){
         isUVMap = uv;        // simpan kembali hasilnya
     }
+    ImGui::Columns(2);
+    ImGui::InputFloat("x: ", &mouseLoc[0]); ImGui::NextColumn();
+    ImGui::InputFloat("y: ", &mouseLoc[1]);
+
+    ImGui::Combo("Select Key", mainCharIdx, items, IM_ARRAYSIZE(items));
+
     ImGui::End();
-
-
-    // if(isUVMap == true){
-    //     ImGui::Begin("UV Map");
-    //     ImGui::Image((ImTextureID)(uvMap), ImVec2(200, 200));
-
-    //     ImGui::End();
-    // }
-
 
     ImGui::Render();
 }
@@ -166,4 +123,8 @@ void Gui::cleanupImGui(VkDevice device){
     ImGui::DestroyContext();
     vkDestroyDescriptorPool(device, imguiPool, nullptr);
     std::cout << "CLEAN UI DEBUG" << std::endl;
+}
+
+void Gui::changeMainChar(int *idx){
+
 }

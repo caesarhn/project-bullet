@@ -24,9 +24,9 @@ void VulkanApplication::createFramebuffers(){
     }
 }
 
-void VulkanApplication::createVertexBuffer(std::vector<Vertex> Vertex, VkBuffer &VBuffer, VkDeviceMemory &VBMemory) {
-    std::cout << "DEBUG VertexBuffer" << std::endl;
-    VkDeviceSize bufferSize = sizeof(Vertex[0]) * Vertex.size();
+void VulkanApplication::createVertexBuffer(std::vector<Vertex> &vertices_local, VkBuffer &vertexBuffer_local, VkDeviceMemory &vertexBufferMemory_local) {
+    DEBUG_LOG("Vertex Buffer");
+    VkDeviceSize bufferSize = sizeof(vertices_local[0]) * vertices_local.size();
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -34,18 +34,18 @@ void VulkanApplication::createVertexBuffer(std::vector<Vertex> Vertex, VkBuffer 
 
     void* data;
     vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, Vertex.data(), (size_t)(bufferSize));
+        memcpy(data, vertices_local.data(), (size_t)(bufferSize));
     vkUnmapMemory(device, stagingBufferMemory);
 
-    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VBuffer, VBMemory);
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer_local, vertexBufferMemory_local);
 
-    copyBuffer(stagingBuffer, VBuffer, bufferSize);
+    copyBuffer(stagingBuffer, vertexBuffer_local, bufferSize);
 
     vkDestroyBuffer(device, stagingBuffer, nullptr);
     vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
-void VulkanApplication::createIndexBuffer() {
+void VulkanApplication::createIndexBuffers() {
     VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
     VkBuffer stagingBuffer;
@@ -65,24 +65,41 @@ void VulkanApplication::createIndexBuffer() {
     vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
+void VulkanApplication::createIndexBuffer(std::vector<uint16_t> &indices_local, VkBuffer &indexBuffer_local, VkDeviceMemory &indexBufferMemory_local) {
+    VkDeviceSize bufferSize = sizeof(indices_local[0]) * indices_local.size();
+
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+    void* data;
+    vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, indices_local.data(), (size_t) bufferSize);
+    vkUnmapMemory(device, stagingBufferMemory);
+
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer_local, indexBufferMemory_local);
+
+    copyBuffer(stagingBuffer, indexBuffer_local, bufferSize);
+
+    vkDestroyBuffer(device, stagingBuffer, nullptr);
+    vkFreeMemory(device, stagingBufferMemory, nullptr);
+}
+
 void VulkanApplication::createUniformBuffers() {
     VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-    VkDeviceSize bufferSizeCharacter = sizeof(UniformBufferObjectCharacter);
-    VkDeviceSize bufferSizeTile = sizeof(UniformBufferObjectTile);
+    VkDeviceSize bufferSizeCharacter = sizeof(UniformBufferObjectEntity);
+    VkDeviceSize bufferSizeObject = bufferSizeCharacter;
 
-    int charactersCount = characters.size();
+    int entityCount = entities.size();
 
     uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
     uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
-    characterUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT * charactersCount);
-    characterUniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT * charactersCount);
-    characterUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT * charactersCount);
+    entityUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT * entityCount);
+    entityUniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT * entityCount);
+    entityUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT * entityCount);
 
-    tileUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-    tileUniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
-    tileUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
@@ -90,16 +107,10 @@ void VulkanApplication::createUniformBuffers() {
         vkMapMemory(device, uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);
     }
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT * charactersCount; i++) {
-        createBuffer(bufferSizeCharacter, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, characterUniformBuffers[i], characterUniformBuffersMemory[i]);
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT * entityCount; i++) {
+        createBuffer(bufferSizeCharacter, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, entityUniformBuffers[i], entityUniformBuffersMemory[i]);
 
-        vkMapMemory(device, characterUniformBuffersMemory[i], 0, bufferSizeCharacter, 0, &characterUniformBuffersMapped[i]);
-    }
-
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        createBuffer(bufferSizeTile, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, tileUniformBuffers[i], tileUniformBuffersMemory[i]);
-
-        vkMapMemory(device, tileUniformBuffersMemory[i], 0, bufferSizeTile, 0, &tileUniformBuffersMapped[i]);
+        vkMapMemory(device, entityUniformBuffersMemory[i], 0, bufferSizeCharacter, 0, &entityUniformBuffersMapped[i]);
     }
 }
 
@@ -119,33 +130,17 @@ void VulkanApplication::createCommandBuffers() {
 
 void VulkanApplication::initUbo(){
     ubo.view = glm::lookAt(
-        glm::vec3(0.0f, 0.0f, 2.0f), // Posisi kamera (x, y, z)
+        glm::vec3(0.0f, 0.0f, 5.0f), // Posisi kamera (x, y, z)
         glm::vec3(0.0f, 0.0f, 0.0f), // Arah kamera (target)
-        glm::vec3(0.0f, 1.0f, 0.0f)  // Up vector (ke atas)
+        glm::vec3(0.0f, -1.0f, 0.0f)  // Up vector (ke atas)
     );
-    ubo.projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 100.0f);
-    // ubo.projection[2][2] = -0.020002f;
-    // ubo.projection[3][2] = -1.002002f;
-    // ubo.projection = glm::perspective(
-    //     glm::radians(45.0f),   // FOV
-    //     WIDTH / (float)HEIGHT, // aspect ratio
-    //     0.1f,                  // near
-    //     100.0f                 // far
-    // );
-    ubo.projection[1][1] *= -1;
+    ubo.projection = glm::ortho(-10.0f, 10.0f, 10.0f, -10.0f, 0.1f, 10.0f);
+    // ubo.projection[1][1] *= -1.0f;
 
-    uboCharacter.model = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    characters.resize(20);
-    for(int i = 0; i < characters.size(); i++){
-        charactersAttribute.emplace_back(7, 9);
-        charactersAttribute[i].isRender = false;
-    }
-
-    characters[0] = uboCharacter;
-    characters[1] = uboCharacter;
-    characters[2] = uboCharacter;
-
-    for(int i = 3; i < 20; i++){
-        characters[i] = uboCharacter;
-    }
+    uboCharacter.model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    uboCharacter.animationDetail = glm::ivec4(4, 8, 0, 0);
+    uboCharacter.controlAnimation = glm::ivec4(0, 0, 0, 0);
+    uboCharacter.samplerIndex = glm::ivec4(0, 1, 2, 0);
+    
+    initCharacters();
 }

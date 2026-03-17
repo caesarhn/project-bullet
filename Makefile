@@ -345,6 +345,54 @@ lib/char/char.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/char/char.cpp.s
 .PHONY : lib/char/char.cpp.s
 
+lib/object/tools.o: lib/object/tools.cpp.o
+.PHONY : lib/object/tools.o
+
+# target to build an object file
+lib/object/tools.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/object/tools.cpp.o
+.PHONY : lib/object/tools.cpp.o
+
+lib/object/tools.i: lib/object/tools.cpp.i
+.PHONY : lib/object/tools.i
+
+# target to preprocess a source file
+lib/object/tools.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/object/tools.cpp.i
+.PHONY : lib/object/tools.cpp.i
+
+lib/object/tools.s: lib/object/tools.cpp.s
+.PHONY : lib/object/tools.s
+
+# target to generate assembly for a file
+lib/object/tools.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/object/tools.cpp.s
+.PHONY : lib/object/tools.cpp.s
+
+lib/physics/physics.o: lib/physics/physics.cpp.o
+.PHONY : lib/physics/physics.o
+
+# target to build an object file
+lib/physics/physics.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/physics/physics.cpp.o
+.PHONY : lib/physics/physics.cpp.o
+
+lib/physics/physics.i: lib/physics/physics.cpp.i
+.PHONY : lib/physics/physics.i
+
+# target to preprocess a source file
+lib/physics/physics.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/physics/physics.cpp.i
+.PHONY : lib/physics/physics.cpp.i
+
+lib/physics/physics.s: lib/physics/physics.cpp.s
+.PHONY : lib/physics/physics.s
+
+# target to generate assembly for a file
+lib/physics/physics.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/physics/physics.cpp.s
+.PHONY : lib/physics/physics.cpp.s
+
 lib/ui/ui.o: lib/ui/ui.cpp.o
 .PHONY : lib/ui/ui.o
 
@@ -597,6 +645,12 @@ help:
 	@echo "... lib/char/char.o"
 	@echo "... lib/char/char.i"
 	@echo "... lib/char/char.s"
+	@echo "... lib/object/tools.o"
+	@echo "... lib/object/tools.i"
+	@echo "... lib/object/tools.s"
+	@echo "... lib/physics/physics.o"
+	@echo "... lib/physics/physics.i"
+	@echo "... lib/physics/physics.s"
 	@echo "... lib/ui/ui.o"
 	@echo "... lib/ui/ui.i"
 	@echo "... lib/ui/ui.s"

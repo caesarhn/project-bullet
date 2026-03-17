@@ -5,6 +5,7 @@ Application::Application(){
     Vulkan = new VulkanApplication;
     Vulkan->initWindow();
     Vulkan->initVulkan();
+    std::cout<<"APP DEBUG"<<std::endl;
     // Vulkan->initUbo();
     Vulkan->mainLoop();
     Vulkan->cleanup();
