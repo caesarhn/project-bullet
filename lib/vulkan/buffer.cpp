@@ -100,7 +100,6 @@ void VulkanApplication::createUniformBuffers() {
     entityUniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT * entityCount);
     entityUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT * entityCount);
 
-
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
 
@@ -111,6 +110,26 @@ void VulkanApplication::createUniformBuffers() {
         createBuffer(bufferSizeCharacter, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, entityUniformBuffers[i], entityUniformBuffersMemory[i]);
 
         vkMapMemory(device, entityUniformBuffersMemory[i], 0, bufferSizeCharacter, 0, &entityUniformBuffersMapped[i]);
+    }
+}
+
+void VulkanApplication::createStorageBuffers(std::vector<TileMap> &tiles, std::vector<VkBuffer> &buffer, std::vector<VkDeviceMemory> &bufferMemory, std::vector<void*> &bufferMapped) {
+    // VkDeviceSize bufferSize = tiles[t].tiles.size();
+
+    buffer.resize(MAX_FRAMES_IN_FLIGHT * tiles.size());
+    bufferMemory.resize(MAX_FRAMES_IN_FLIGHT * tiles.size());
+    bufferMapped.resize(MAX_FRAMES_IN_FLIGHT * tiles.size());
+    
+    for(int t = 0; t < tiles.size(); t++){
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+            VkDeviceSize bufferSize = tiles[t].tiles.size() * sizeof(int);
+            DEBUG_LOG(i);
+            DEBUG_LOG(bufferSize);
+            int index = (t * MAX_FRAMES_IN_FLIGHT + i);
+            createBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffer[index], bufferMemory[index]);
+    
+            vkMapMemory(device, bufferMemory[index], 0, bufferSize, 0, &bufferMapped[index]);
+        }
     }
 }
 
@@ -134,7 +153,7 @@ void VulkanApplication::initUbo(){
         glm::vec3(0.0f, 0.0f, 0.0f), // Arah kamera (target)
         glm::vec3(0.0f, -1.0f, 0.0f)  // Up vector (ke atas)
     );
-    ubo.projection = glm::ortho(-10.0f, 10.0f, 10.0f, -10.0f, 0.1f, 10.0f);
+    ubo.projection = glm::ortho(-8.0f, 8.0f, 4.5f, -4.5f, 0.1f, 10.0f);
     // ubo.projection[1][1] *= -1.0f;
 
     uboCharacter.model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 0.0f));
@@ -143,4 +162,8 @@ void VulkanApplication::initUbo(){
     uboCharacter.samplerIndex = glm::ivec4(0, 1, 2, 0);
     
     initCharacters();
+}
+
+void VulkanApplication::initPushConstant(){
+    battlePushConstant.animationIdx = glm::ivec4(0);
 }

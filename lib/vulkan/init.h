@@ -31,9 +31,11 @@
 #include <thread>
 #include <random>
 
+#include <constant.h>
 #include <ui/ui.h>
 #include <levels/level.h>
 #include <logic/logic.h>
+#include <app/mechanics/mechanics.h>
 
 class VulkanApplication
 {
@@ -41,20 +43,21 @@ private:
 
     //controlAnimation (0, 0, 0, 0) for object
     //controlAnimation (1, 0, 0, 0) for character
-    //controlAnimation (2, 0, 0, 0) for tilemap
+    //controlAnimation (2, 0, 0, 0) for linemap
+    //contrilAnimation (3, 0, 0, 0) for tilemap
 
     const uint32_t WIDTH = 1280;
     const uint32_t HEIGHT = 720;
 
-    //constant logic animation
-    const float CHARACTER_IDLE = 0.0f;
-    const float CHARACTER_WALK = 1.0f;
+    // //constant logic animation
+    // const float CHARACTER_IDLE = 0.0f;
+    // const float CHARACTER_WALK = 1.0f;
 
-    //sub animation
-    const float CHARACTER_WALK_DOWN = 0.0f;
-    const float CHARACTER_WALK_LEFT = 1.0f;
-    const float CHARACTER_WALK_RIGHT = 2.0f;
-    const float CHARACTER_WALK_UP = 3.0f;
+    // //sub animation
+    // const float CHARACTER_WALK_DOWN = 0.0f;
+    // const float CHARACTER_WALK_LEFT = 1.0f;
+    // const float CHARACTER_WALK_RIGHT = 2.0f;
+    // const float CHARACTER_WALK_UP = 3.0f;
     
     // Batas FPS
     bool androidExitMainLoop = false;
@@ -67,6 +70,13 @@ private:
     double mouseX = 0.0f;
     double mouseY = 0.0f;
     glm::vec2 mouseWorld;
+
+    // //Events
+    // const int EVENT_MENU = 0;
+    // const int EVENT_WORLD = 1;
+    // const int EVENT_BATTLE = 2;
+    // const int EVENT_INVENTORY = 3;
+    int currentEvent = 1;
 
     //Map
     int8_t showMapLine = 0;
@@ -93,10 +103,11 @@ private:
     #else
     #define DEBUG_LOG(x) std::cout << "DEBUG: " << x << std::endl
     #endif
-    
 
-    std::array<std::string, 6> textureAsset;
-    std::array<std::string, 10> characterAsset;
+    std::array<std::string, 6> textureAssets;
+    std::array<std::string, 12> characterAssets;
+    std::array<std::string, 1> battleEnemyAssets;
+    std::array<std::string, 7> battleEffectAssets;
     
     struct QueueFamilyIndices {
         std::optional<uint32_t> graphicsFamily;
@@ -203,6 +214,10 @@ private:
         }
     };
 
+    struct BattlePushConstant {
+        alignas(16) glm::ivec4 animationIdx;
+    };
+
     const glm::mat4 defaultModel = glm::mat4(1.0f);
     const std::vector<glm::vec4> sub_texture_map = {
         {0.0f, 0.0f, 0.1f, 0.1f},
@@ -210,7 +225,11 @@ private:
     };
     const std::vector<uint16_t> indices = {
         0, 1, 2, 2, 3, 0,
-        4, 5, 6, 6, 7, 4
+        4, 5, 6, 6, 7, 4,
+        8, 9, 10, 10, 11, 8,
+
+        //battles_enemy_vertex (idx 18, count 6)
+        12, 13, 14, 14, 15, 12,
     };
     
     //Vertex
@@ -229,6 +248,7 @@ private:
 
     //for UI section
     Gui gui;
+    Mechanics mechanics;
     bool lockgui = false;
 
     VkInstance instance;
@@ -251,6 +271,10 @@ private:
     VkRenderPass renderPass;
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
+    VkPipelineLayout pipelineLayoutDebug;
+    VkPipeline graphicsPipelineDebug;
+    VkPipelineLayout pipelineLayoutBattle;
+    VkPipeline graphicsPipelineBattle;
     
     VkCommandPool commandPool;
     
@@ -269,6 +293,18 @@ private:
     std::vector<VkDeviceMemory> characterImageMemorys;
     std::vector<VkImageView> characterImageViews;
     std::vector<VkSampler> characterSamplers;
+
+    //Battle enemy texture
+    std::vector<VkImage> battleEnemyImages;
+    std::vector<VkDeviceMemory> battleEnemyImageMemorys;
+    std::vector<VkImageView> battleEnemyImageViews;
+    std::vector<VkSampler> battleEnemySamplers;
+
+    //Battle Effect texture
+    std::vector<VkImage> battleEffectImages;
+    std::vector<VkDeviceMemory> battleEffectImageMemorys;
+    std::vector<VkImageView> battleEffectImageViews;
+    std::vector<VkSampler> battleEffectSamplers;
     
     VkImage textureImage;
     VkDeviceMemory textureImageMemory;
@@ -303,16 +339,23 @@ private:
     VkDescriptorPool descriptorPool;
     VkDescriptorPool imguiDescriptorPool;
 
+    //storage buffer
+    std::vector<VkBuffer> tileMapStorageBuffers;
+    std::vector<VkDeviceMemory> tileMapStorageBuffersMemory;
+    std::vector<void*> tileMapStorageBuffersMapped;
+
     //Descriptor
     std::vector<VkDescriptorSet> descriptorSets;
     std::vector<VkDescriptorSet> descriptorSetsCharacter;
     std::vector<VkDescriptorSet> descriptorSetsCharacterSampler;
-    std::vector<VkDescriptorSet> descriptorSetsTile;
+    std::vector<VkDescriptorSet> descriptorSetsTileMap;
+    std::vector<VkDescriptorSet> descriptorSetsBattleSampler;
     
     VkDescriptorSetLayout descriptorSetLayout;
     VkDescriptorSetLayout descriptorSetLayoutCharacter;
     VkDescriptorSetLayout descriptorSetLayoutCharacterSampler;
-    VkDescriptorSetLayout descriptorSetLayoutTile;
+    VkDescriptorSetLayout descriptorSetLayoutTileMap;
+    VkDescriptorSetLayout descriptorSetLayoutBattleSampler;
     
     std::vector<VkCommandBuffer> commandBuffers;
 
@@ -332,6 +375,9 @@ private:
 
     //object tools
     std::vector<ToolAttributes> tools;
+
+    //PushConstant
+    BattlePushConstant battlePushConstant;
 
     bool framebufferResized = false;
 
@@ -353,8 +399,19 @@ public:
     void createSwapChain();
     void createImageViews();
     void createRenderPass();
+
+    //descriptor set layout
     void createDescriptorSetLayout();
+    void createBattleSamplerDescriptorSetLayout();
+    
+    //descriptor set
+    void createDescriptorSets();
+
+    //pipelines
     void createGraphicsPipeline();
+    void createGraphicsPipelineDebug();
+    void createGraphicsPipelineBattle();
+
     void createCommandPool();
     void createDepthResources();
     void createFramebuffers();
@@ -365,14 +422,17 @@ public:
     //Buffer
     void createVertexBuffer(std::vector<Vertex> &Vertex, VkBuffer &VBuffer, VkDeviceMemory &VBMemory);
     void createIndexBuffer(std::vector<uint16_t> &Index, VkBuffer &VBuffer, VkDeviceMemory &VBMemory);
+    void createStorageBuffers(std::vector<TileMap> &data, std::vector<VkBuffer> &buffer, std::vector<VkDeviceMemory> &bufferMemory, std::vector<void*> &bufferMapped);
     void createIndexBuffers();
     void createUniformBuffers();
     void createDescriptorPool();
     void initUbo();
+    void initPushConstant();
     void initCharacters();
 
     // gui.createImGuiDescriptorPool(device);
-    void createDescriptorSets();
+    //Descriptor
+
     void createCommandBuffers();
     void createSyncObjects();
 
@@ -383,12 +443,14 @@ public:
 
     //draw
     void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
-    void updateUniformBuffer(uint32_t currentImage);
+    void updateUniformBuffer(uint32_t currentFrame);
+    void updateStorageBuffer(uint32_t currentFrame);
     void drawFrame();
     void mainLoop();
     void prepareDrawCharacters(int charIdx, uint32_t currentFrame);
     void animateCharacter();
     void initToolsObject();
+    void renderTileMap(VkCommandBuffer commandBuffer, uint32_t currentFrame);
 
     //update data from ui
     void updateUiData();
@@ -430,15 +492,31 @@ public:
     void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
     void createTextureImages(const char *filename);
     void createCharacterTextureImages(const char *filename);
+    void createTexturesImages(std::vector<VkImage> &images, std::vector<VkDeviceMemory> &imagesMemorys, const char *filename);
     void createTextureImageViews();
+    void createTexturesImagesViews(std::vector<VkImage> &images, std::vector<VkImageView> &imagesView);
+
     void createTextureSamplers();
+    void createTexturesSamplers(std::vector<VkSampler> &samplers, std::vector<VkImage> &images);
 
     //physics
     bool checkCollision(glm::vec4 a, glm::vec4 b);
     void charMove(int chardx);
 
+    //event
+    void battleEvent();
+
     //test
     void createVertexBufferHehe();
+
+    //recordCommandBuffer
+    void recordCommandBufferBattle(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+    //application
+    bool isWindowClosed();
+    void prepLoop();
+    void beginLoop();
+    void endLoop();
 };
 
 

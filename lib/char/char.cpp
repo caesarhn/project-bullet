@@ -1,7 +1,7 @@
 #include <vulkan/init.h>
 
 void VulkanApplication::initCharacters(){
-    entities.resize(6);
+    entities.resize(7);
     charactersAttribute.resize(4);
 
     //char1
@@ -98,8 +98,19 @@ void VulkanApplication::initCharacters(){
 
     initToolsObject();
 
+    entities[5].model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    entities[5].animationDetail = glm::ivec4(1, 1, 0, 0);
+    entities[5].controlAnimation = glm::ivec4(2, 0, 0, 0);
+    entities[5].samplerIndex = glm::ivec4(0, 1, 2, 0);
+    entities[5].object = glm::ivec4(1, 0, 0, 0);
 
+    // entities[4].model = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
+    entities[6].model = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    entities[6].animationDetail = glm::ivec4(1, 1, 0, 0);
+    entities[6].controlAnimation = glm::ivec4(0, 0, 0, 0);
+    entities[6].samplerIndex = glm::ivec4(0, 1, 2, 0);
+    entities[6].object = glm::ivec4(3, 0, 0, 0);
 }
 
 void VulkanApplication::prepareDrawCharacters(int charIdx, u_int32_t currentFrame){
@@ -163,11 +174,12 @@ void VulkanApplication::charMove(int charIdx){
 
         glm::vec2 newPosition(currentChar.position.x + moveTo.x, currentChar.position.y + moveTo.y);
         bool collision = false;
-        for(int i = 0; i < entities.size(); i++){
+        for(int i = 0; i < charactersAttribute.size(); i++){
             if(i != charIdx){
                 collision = checkCollision(glm::vec4(newPosition, currentChar.collicionRect),
                                             glm::vec4(charactersAttribute[i].position, charactersAttribute[i].collicionRect));
                 if(collision == true){
+                    printf("collicions: %i with %i \n", charIdx, i);
                     break;
                 }
             }

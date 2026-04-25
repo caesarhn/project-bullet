@@ -1,13 +1,15 @@
 #include <vulkan/init.h>
 
 void VulkanApplication::createDescriptorPool() {
-    std::array<VkDescriptorPoolSize, 2> poolSizes{};
-    uint32_t texturePoolSize = 1 + textureImages.size();
+    std::array<VkDescriptorPoolSize, 3> poolSizes{};
+    uint32_t texturePoolSize = 1 + textureImages.size() + battleEnemyImages.size() + battleEffectImages.size();
     std::cout << "descriptor_combined_image_sampler: " << texturePoolSize << std::endl;
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[0].descriptorCount = static_cast<uint32_t>((entities.size() + 10) * MAX_FRAMES_IN_FLIGHT);
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT * (texturePoolSize + 4));
+    poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    poolSizes[2].descriptorCount = static_cast<uint32_t>((tileMaps.size() + 10) * MAX_FRAMES_IN_FLIGHT);
     // poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     // poolSizes[0].descriptorCount = static_cast<uint32_t>(1000);
     // poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;

@@ -33,13 +33,16 @@ void Gui::initImGui(GLFWwindow *window, VkInstance instance, VkDevice device, Vk
     ImGui::CreateContext();
 
     ImFontConfig font_cfg;
-    font_cfg.RasterizerMultiply = 1.5f;
+    font_cfg.RasterizerMultiply = 1.0f;
 
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.DisplaySize = ImVec2(static_cast<float>(2080), static_cast<float>(1080));
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Aktifkan navigasi keyboard
     io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines;
     io.Fonts->Build();
+
+    io.Fonts->AddFontDefault();
+    gameFont = io.Fonts->AddFontFromFileTTF("src/font/minecraftia.ttf", 18.5f, NULL, io.Fonts->GetGlyphRangesJapanese());
 
     // 2. Style ImGui (Opsional)
     ImGui::StyleColorsDark();
@@ -77,17 +80,32 @@ void Gui::initImGui(GLFWwindow *window, VkInstance instance, VkDevice device, Vk
     charas[0] = 0.0f;
     charas[1] = 0.0f;
     charas[2] = 0.0f;
+
+    tiles.resize(100);
+    currentEvent = new int(0);
 }
 
 void Gui::recordImGuiCommands(VkCommandBuffer commandBuffer){
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer);
 }
 
-void Gui::renderUI(){
+void Gui::beginUi(){
+    ImGui_ImplVulkan_NewFrame();
+    ImGui::NewFrame();
+}
+
+void Gui::endUi(){
+    ImGui::Render();
+}
+
+void Gui::renderUI(float width, float height){
+    screenWidth = width;
+    screenHeight = height;
+
     ImGui_ImplVulkan_NewFrame();
     ImGui::NewFrame();
     // std::cout << "INIT IMGUI DEBUG" << std::endl;
-
+    
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImVec2(250, 300));
     ImGui::Begin("Hello Vulkan ImGui");
@@ -96,21 +114,149 @@ void Gui::renderUI(){
     if (ImGui::Checkbox("disable", &v)){
         guiEnableWindows[0] = v;        // simpan kembali hasilnya
     }
+    ImGui::Checkbox("debug_col", &debugCol);
+    
     ImGui::InputFloat3("loc", charas, "%.1f");
-
+    
     bool uv = isUVMap;
     if (ImGui::Checkbox("uv map", &uv)){
         isUVMap = uv;        // simpan kembali hasilnya
     }
+    
+    ImGui::PushFont(gameFont);
     ImGui::Columns(2);
-    ImGui::InputFloat("x: ", &mouseLoc[0]); ImGui::NextColumn();
+    ImGui::InputFloat("x: ", &mouseLoc[0]); 
+    ImGui::NextColumn();
     ImGui::InputFloat("y: ", &mouseLoc[1]);
-
+    ImGui::PopFont();
+    
+    ImGui::Columns(1);
     ImGui::Combo("Select Key", mainCharIdx, items, IM_ARRAYSIZE(items));
-
+    ImGui::Combo("Choose Event", currentEvent, eventOptions, IM_ARRAYSIZE(eventOptions));
+    if (ImGui::Checkbox("show tile", &showTile)){
+        // simpan kembali hasilnya
+    }
+    
+    ImGui::Columns(2);
+    ImGui::InputInt("idx: ", &tileIndex);
+    ImGui::InputInt("value: ", &tiles[tileIndex]);
+    
     ImGui::End();
-
+    
+    if(*currentEvent == EVENT_WORLD){
+        std::cout << "DEBUG MAIN UI" << std::endl;
+        conversationUi();
+    }
+    else if(*currentEvent == EVENT_BATTLE){
+        battleUi();
+    }
+    else if(*currentEvent == EVENT_INVENTORY){
+        inventoryUi();
+    }
+    
     ImGui::Render();
+}
+
+void Gui::conversationUi(){
+    // Dapatkan viewport dan work area
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize 
+                    | ImGuiWindowFlags_NoMove
+                    | ImGuiWindowFlags_NoBringToFrontOnFocus
+                    | ImGuiWindowFlags_NoCollapse;
+
+    // Terapkan posisi dan ukuran
+    ImGui::SetNextWindowPos(ImVec2(20.0f, (screenHeight - (screenHeight / 4) - 20.0f)));
+    ImGui::SetNextWindowSize(ImVec2((screenWidth - 40.0f), (screenHeight / 4)));
+
+    ImGui::PushFont(gameFont);
+    // ImGui::SetNextWindowPos(ImVec2(0, 0));
+    // ImGui::SetNextWindowSize(ImVec2(250, 300));
+    ImGui::Begin("Character Name", nullptr, flags);
+
+    ImGui::Text("This is an example of character conversations..");
+    ImGui::Text("  Posisi (Pos):      (%.1f, %.1f)", viewport->WorkPos.x, viewport->WorkPos.y);
+    ImGui::Text("  Ukuran (Size):     (%.1f, %.1f)", viewport->Size.x, viewport->Size.y);
+    ImGui::Text("  Ukuran (Size):     (%.1f, %.1f)", screenWidth, screenHeight);
+
+    ImGui::PopFont();
+    ImGui::End();
+}
+
+void Gui::battleUi(){
+
+    // Terapkan posisi dan ukuran
+    ImGui::SetNextWindowPos(ImVec2(20.0f, (screenHeight - (screenHeight / 4) - 20.0f)));
+    ImGui::SetNextWindowSize(ImVec2((screenWidth - 40.0f), (screenHeight / 4)));
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar 
+                       | ImGuiWindowFlags_NoResize 
+                       | ImGuiWindowFlags_NoMove
+                       | ImGuiWindowFlags_NoBringToFrontOnFocus
+                       | ImGuiWindowFlags_NoCollapse;
+
+    ImGui::PushFont(gameFont);
+
+    ImGui::Begin("Battle", nullptr, flags);
+
+    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.8f, 0.3f, 1.0f)); // Warna saat mouse di atasnya (hijau terang)
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.0f, 0.5f, 0.0f, 1.0f)); // Warna saat ditekan (hijau gelap)
+    
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(20.0f, 10.0f));
+
+    if (ImGui::Button("Tombol Hijau Kustom")) {
+        // Logika tombol
+    }
+
+    ImGui::PopStyleColor(3);
+    ImGui::PopStyleVar();
+
+    ImGui::PopFont();
+    ImGui::End();
+}
+
+void Gui::inventoryUi(){
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize 
+                    | ImGuiWindowFlags_NoMove
+                    | ImGuiWindowFlags_NoBringToFrontOnFocus
+                    | ImGuiWindowFlags_NoCollapse
+                    | ImGuiWindowFlags_NoTitleBar;
+
+    // Terapkan posisi dan ukuran
+    ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
+    ImGui::SetNextWindowSize(ImVec2((screenWidth), (screenHeight)));
+
+    ImGui::PushFont(gameFont);
+    ImGui::Begin("Inventory", nullptr, flags);
+
+    ImGui::Text("This is an example of character conversations..");
+    ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 7.0f);
+    ImGui::PushStyleColor(ImGuiCol_Tab, ImVec4(0.1f, 0.1f, 0.1f, 0.1f));
+    if (ImGui::BeginTabBar("InventoryTab")){
+        if (ImGui::BeginTabItem("Items")) 
+        {
+            ImGui::Text("Ini adalah konten di dalam tab pertama.");
+            ImGui::Button("Klik Saya");
+            ImGui::EndTabItem();
+        }
+
+        if (ImGui::BeginTabItem("Character")) 
+        {
+            ImGui::Text("Ini adalah konten yang berbeda di tab kedua.");
+            static float f = 0.5f;
+            ImGui::SliderFloat("Slider", &f, 0.0f, 1.0f);
+            ImGui::EndTabItem();
+        }
+
+        ImGui::EndTabBar();
+    
+    }
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor(1);
+
+    ImGui::PopFont();
+    ImGui::End();
 }
 
 void Gui::setUVMap(VkDescriptorSet sampler){
@@ -127,4 +273,10 @@ void Gui::cleanupImGui(VkDevice device){
 
 void Gui::changeMainChar(int *idx){
 
+}
+
+void Gui::updateTiles(std::vector<int> &Tiles){
+    for(int x = 0; x < 100; x++){
+        Tiles[x] = tiles[x];
+    }
 }

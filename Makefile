@@ -321,6 +321,126 @@ lib/app/app.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/app.cpp.s
 .PHONY : lib/app/app.cpp.s
 
+lib/app/battle.o: lib/app/battle.cpp.o
+.PHONY : lib/app/battle.o
+
+# target to build an object file
+lib/app/battle.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/battle.cpp.o
+.PHONY : lib/app/battle.cpp.o
+
+lib/app/battle.i: lib/app/battle.cpp.i
+.PHONY : lib/app/battle.i
+
+# target to preprocess a source file
+lib/app/battle.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/battle.cpp.i
+.PHONY : lib/app/battle.cpp.i
+
+lib/app/battle.s: lib/app/battle.cpp.s
+.PHONY : lib/app/battle.s
+
+# target to generate assembly for a file
+lib/app/battle.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/battle.cpp.s
+.PHONY : lib/app/battle.cpp.s
+
+lib/app/mechanics/attacks.o: lib/app/mechanics/attacks.cpp.o
+.PHONY : lib/app/mechanics/attacks.o
+
+# target to build an object file
+lib/app/mechanics/attacks.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/mechanics/attacks.cpp.o
+.PHONY : lib/app/mechanics/attacks.cpp.o
+
+lib/app/mechanics/attacks.i: lib/app/mechanics/attacks.cpp.i
+.PHONY : lib/app/mechanics/attacks.i
+
+# target to preprocess a source file
+lib/app/mechanics/attacks.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/mechanics/attacks.cpp.i
+.PHONY : lib/app/mechanics/attacks.cpp.i
+
+lib/app/mechanics/attacks.s: lib/app/mechanics/attacks.cpp.s
+.PHONY : lib/app/mechanics/attacks.s
+
+# target to generate assembly for a file
+lib/app/mechanics/attacks.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/mechanics/attacks.cpp.s
+.PHONY : lib/app/mechanics/attacks.cpp.s
+
+lib/app/mechanics/enemies.o: lib/app/mechanics/enemies.cpp.o
+.PHONY : lib/app/mechanics/enemies.o
+
+# target to build an object file
+lib/app/mechanics/enemies.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/mechanics/enemies.cpp.o
+.PHONY : lib/app/mechanics/enemies.cpp.o
+
+lib/app/mechanics/enemies.i: lib/app/mechanics/enemies.cpp.i
+.PHONY : lib/app/mechanics/enemies.i
+
+# target to preprocess a source file
+lib/app/mechanics/enemies.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/mechanics/enemies.cpp.i
+.PHONY : lib/app/mechanics/enemies.cpp.i
+
+lib/app/mechanics/enemies.s: lib/app/mechanics/enemies.cpp.s
+.PHONY : lib/app/mechanics/enemies.s
+
+# target to generate assembly for a file
+lib/app/mechanics/enemies.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/mechanics/enemies.cpp.s
+.PHONY : lib/app/mechanics/enemies.cpp.s
+
+lib/app/mechanics/mechanics.o: lib/app/mechanics/mechanics.cpp.o
+.PHONY : lib/app/mechanics/mechanics.o
+
+# target to build an object file
+lib/app/mechanics/mechanics.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/mechanics/mechanics.cpp.o
+.PHONY : lib/app/mechanics/mechanics.cpp.o
+
+lib/app/mechanics/mechanics.i: lib/app/mechanics/mechanics.cpp.i
+.PHONY : lib/app/mechanics/mechanics.i
+
+# target to preprocess a source file
+lib/app/mechanics/mechanics.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/mechanics/mechanics.cpp.i
+.PHONY : lib/app/mechanics/mechanics.cpp.i
+
+lib/app/mechanics/mechanics.s: lib/app/mechanics/mechanics.cpp.s
+.PHONY : lib/app/mechanics/mechanics.s
+
+# target to generate assembly for a file
+lib/app/mechanics/mechanics.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/mechanics/mechanics.cpp.s
+.PHONY : lib/app/mechanics/mechanics.cpp.s
+
+lib/app/mechanics/weapons.o: lib/app/mechanics/weapons.cpp.o
+.PHONY : lib/app/mechanics/weapons.o
+
+# target to build an object file
+lib/app/mechanics/weapons.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/mechanics/weapons.cpp.o
+.PHONY : lib/app/mechanics/weapons.cpp.o
+
+lib/app/mechanics/weapons.i: lib/app/mechanics/weapons.cpp.i
+.PHONY : lib/app/mechanics/weapons.i
+
+# target to preprocess a source file
+lib/app/mechanics/weapons.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/mechanics/weapons.cpp.i
+.PHONY : lib/app/mechanics/weapons.cpp.i
+
+lib/app/mechanics/weapons.s: lib/app/mechanics/weapons.cpp.s
+.PHONY : lib/app/mechanics/weapons.s
+
+# target to generate assembly for a file
+lib/app/mechanics/weapons.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/app/mechanics/weapons.cpp.s
+.PHONY : lib/app/mechanics/weapons.cpp.s
+
 lib/char/char.o: lib/char/char.cpp.o
 .PHONY : lib/char/char.o
 
@@ -344,6 +464,30 @@ lib/char/char.s: lib/char/char.cpp.s
 lib/char/char.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/char/char.cpp.s
 .PHONY : lib/char/char.cpp.s
+
+lib/object/tilemap.o: lib/object/tilemap.cpp.o
+.PHONY : lib/object/tilemap.o
+
+# target to build an object file
+lib/object/tilemap.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/object/tilemap.cpp.o
+.PHONY : lib/object/tilemap.cpp.o
+
+lib/object/tilemap.i: lib/object/tilemap.cpp.i
+.PHONY : lib/object/tilemap.i
+
+# target to preprocess a source file
+lib/object/tilemap.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/object/tilemap.cpp.i
+.PHONY : lib/object/tilemap.cpp.i
+
+lib/object/tilemap.s: lib/object/tilemap.cpp.s
+.PHONY : lib/object/tilemap.s
+
+# target to generate assembly for a file
+lib/object/tilemap.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/object/tilemap.cpp.s
+.PHONY : lib/object/tilemap.cpp.s
 
 lib/object/tools.o: lib/object/tools.cpp.o
 .PHONY : lib/object/tools.o
@@ -417,6 +561,30 @@ lib/ui/ui.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/ui/ui.cpp.s
 .PHONY : lib/ui/ui.cpp.s
 
+lib/vulkan/application.o: lib/vulkan/application.cpp.o
+.PHONY : lib/vulkan/application.o
+
+# target to build an object file
+lib/vulkan/application.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/application.cpp.o
+.PHONY : lib/vulkan/application.cpp.o
+
+lib/vulkan/application.i: lib/vulkan/application.cpp.i
+.PHONY : lib/vulkan/application.i
+
+# target to preprocess a source file
+lib/vulkan/application.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/application.cpp.i
+.PHONY : lib/vulkan/application.cpp.i
+
+lib/vulkan/application.s: lib/vulkan/application.cpp.s
+.PHONY : lib/vulkan/application.s
+
+# target to generate assembly for a file
+lib/vulkan/application.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/application.cpp.s
+.PHONY : lib/vulkan/application.cpp.s
+
 lib/vulkan/buffer.o: lib/vulkan/buffer.cpp.o
 .PHONY : lib/vulkan/buffer.o
 
@@ -440,6 +608,30 @@ lib/vulkan/buffer.s: lib/vulkan/buffer.cpp.s
 lib/vulkan/buffer.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/buffer.cpp.s
 .PHONY : lib/vulkan/buffer.cpp.s
+
+lib/vulkan/descriptor.o: lib/vulkan/descriptor.cpp.o
+.PHONY : lib/vulkan/descriptor.o
+
+# target to build an object file
+lib/vulkan/descriptor.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/descriptor.cpp.o
+.PHONY : lib/vulkan/descriptor.cpp.o
+
+lib/vulkan/descriptor.i: lib/vulkan/descriptor.cpp.i
+.PHONY : lib/vulkan/descriptor.i
+
+# target to preprocess a source file
+lib/vulkan/descriptor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/descriptor.cpp.i
+.PHONY : lib/vulkan/descriptor.cpp.i
+
+lib/vulkan/descriptor.s: lib/vulkan/descriptor.cpp.s
+.PHONY : lib/vulkan/descriptor.s
+
+# target to generate assembly for a file
+lib/vulkan/descriptor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/descriptor.cpp.s
+.PHONY : lib/vulkan/descriptor.cpp.s
 
 lib/vulkan/draw.o: lib/vulkan/draw.cpp.o
 .PHONY : lib/vulkan/draw.o
@@ -488,6 +680,30 @@ lib/vulkan/init.s: lib/vulkan/init.cpp.s
 lib/vulkan/init.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/init.cpp.s
 .PHONY : lib/vulkan/init.cpp.s
+
+lib/vulkan/pipelines.o: lib/vulkan/pipelines.cpp.o
+.PHONY : lib/vulkan/pipelines.o
+
+# target to build an object file
+lib/vulkan/pipelines.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/pipelines.cpp.o
+.PHONY : lib/vulkan/pipelines.cpp.o
+
+lib/vulkan/pipelines.i: lib/vulkan/pipelines.cpp.i
+.PHONY : lib/vulkan/pipelines.i
+
+# target to preprocess a source file
+lib/vulkan/pipelines.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/pipelines.cpp.i
+.PHONY : lib/vulkan/pipelines.cpp.i
+
+lib/vulkan/pipelines.s: lib/vulkan/pipelines.cpp.s
+.PHONY : lib/vulkan/pipelines.s
+
+# target to generate assembly for a file
+lib/vulkan/pipelines.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/vulkan_new.dir/build.make CMakeFiles/vulkan_new.dir/lib/vulkan/pipelines.cpp.s
+.PHONY : lib/vulkan/pipelines.cpp.s
 
 lib/vulkan/pool.o: lib/vulkan/pool.cpp.o
 .PHONY : lib/vulkan/pool.o
@@ -642,9 +858,27 @@ help:
 	@echo "... lib/app/app.o"
 	@echo "... lib/app/app.i"
 	@echo "... lib/app/app.s"
+	@echo "... lib/app/battle.o"
+	@echo "... lib/app/battle.i"
+	@echo "... lib/app/battle.s"
+	@echo "... lib/app/mechanics/attacks.o"
+	@echo "... lib/app/mechanics/attacks.i"
+	@echo "... lib/app/mechanics/attacks.s"
+	@echo "... lib/app/mechanics/enemies.o"
+	@echo "... lib/app/mechanics/enemies.i"
+	@echo "... lib/app/mechanics/enemies.s"
+	@echo "... lib/app/mechanics/mechanics.o"
+	@echo "... lib/app/mechanics/mechanics.i"
+	@echo "... lib/app/mechanics/mechanics.s"
+	@echo "... lib/app/mechanics/weapons.o"
+	@echo "... lib/app/mechanics/weapons.i"
+	@echo "... lib/app/mechanics/weapons.s"
 	@echo "... lib/char/char.o"
 	@echo "... lib/char/char.i"
 	@echo "... lib/char/char.s"
+	@echo "... lib/object/tilemap.o"
+	@echo "... lib/object/tilemap.i"
+	@echo "... lib/object/tilemap.s"
 	@echo "... lib/object/tools.o"
 	@echo "... lib/object/tools.i"
 	@echo "... lib/object/tools.s"
@@ -654,15 +888,24 @@ help:
 	@echo "... lib/ui/ui.o"
 	@echo "... lib/ui/ui.i"
 	@echo "... lib/ui/ui.s"
+	@echo "... lib/vulkan/application.o"
+	@echo "... lib/vulkan/application.i"
+	@echo "... lib/vulkan/application.s"
 	@echo "... lib/vulkan/buffer.o"
 	@echo "... lib/vulkan/buffer.i"
 	@echo "... lib/vulkan/buffer.s"
+	@echo "... lib/vulkan/descriptor.o"
+	@echo "... lib/vulkan/descriptor.i"
+	@echo "... lib/vulkan/descriptor.s"
 	@echo "... lib/vulkan/draw.o"
 	@echo "... lib/vulkan/draw.i"
 	@echo "... lib/vulkan/draw.s"
 	@echo "... lib/vulkan/init.o"
 	@echo "... lib/vulkan/init.i"
 	@echo "... lib/vulkan/init.s"
+	@echo "... lib/vulkan/pipelines.o"
+	@echo "... lib/vulkan/pipelines.i"
+	@echo "... lib/vulkan/pipelines.s"
 	@echo "... lib/vulkan/pool.o"
 	@echo "... lib/vulkan/pool.i"
 	@echo "... lib/vulkan/pool.s"

@@ -35,6 +35,8 @@ void VulkanApplication::initWindow() {
 void VulkanApplication::initVulkan(){
     initVariables();
     initUbo();
+    initPushConstant();
+    initTileMaps();
     createInstance();
     setupDebugMessenger();
     createSurface();
@@ -43,18 +45,23 @@ void VulkanApplication::initVulkan(){
     createSwapChain();
     createImageViews();
     createRenderPass();
+    
     createDescriptorSetLayout();
+    createBattleSamplerDescriptorSetLayout();
+
     createGraphicsPipeline();
+    createGraphicsPipelineDebug();
+    createGraphicsPipelineBattle();
     createCommandPool();
     createDepthResources();
     createFramebuffers();
     
-    // experimental feature
-    for(int i = 0; i < textureAsset.size(); i++){
-        createTextureImages(textureAsset[i].c_str());
+    for(int i = 0; i < textureAssets.size(); i++){
+        createTextureImages(textureAssets[i].c_str());
     }
-    for(int i = 0; i < characterAsset.size(); i++){
-        createCharacterTextureImages(characterAsset[i].c_str());
+
+    for(int i = 0; i < characterAssets.size(); i++){
+        createCharacterTextureImages(characterAssets[i].c_str());
     }
     
     createTextureImageViews();
@@ -63,22 +70,35 @@ void VulkanApplication::initVulkan(){
     createTextureImage();
     createTextureImageView();
     createTextureSampler();
+
+    for(int i = 0; i < battleEnemyAssets.size(); i++){
+        createTexturesImages(battleEnemyImages, battleEnemyImageMemorys, battleEnemyAssets[i].c_str());
+    }
+    createTexturesImagesViews(battleEnemyImages, battleEnemyImageViews);
+    createTexturesSamplers(battleEnemySamplers, battleEnemyImages);
+    
+    for(int i = 0; i < battleEffectAssets.size(); i++){
+        DEBUG_LOG(i);
+        createTexturesImages(battleEffectImages, battleEffectImageMemorys, battleEffectAssets[i].c_str());
+        DEBUG_LOG("FUNTION");
+    }
+    createTexturesImagesViews(battleEffectImages, battleEffectImageViews);
+    createTexturesSamplers(battleEffectSamplers, battleEffectImages);
     
     // for(int i = 0; i < objectPool.size(); i++){
         //     createVertexBuffer(objectPool[i].vertices, vertexBufferPool[i], vertexBufferMemoryPool[i]);
         // }
-        
         // createVertexBuffer(vertices, vertexBuffer, vertexBufferMemory);
-        createVertexBufferHehe();
-        createVertexBuffer(vertices2, vertexBuffer1, vertexBufferMemory1);
-        createVertexBuffer(tileLines, vertexBufferTileLine, vertexBufferMemoryTileLine);
-        createIndexBuffers();
-        createIndexBuffer(tileLineIndexX, indexBufferTileLines, indexBufferMemoryTileLines);
-        createUniformBuffers();
-        createDescriptorPool();
-        createDescriptorSets();
-        createCommandBuffers();
-        DEBUG_LOG("FUNTION");
+    createVertexBufferHehe();
+    createVertexBuffer(vertices2, vertexBuffer1, vertexBufferMemory1);
+    createVertexBuffer(tileLines, vertexBufferTileLine, vertexBufferMemoryTileLine);
+    createIndexBuffers();
+    createIndexBuffer(tileLineIndexX, indexBufferTileLines, indexBufferMemoryTileLines);
+    createUniformBuffers();
+    createStorageBuffers(tileMaps, tileMapStorageBuffers, tileMapStorageBuffersMemory, tileMapStorageBuffersMapped);
+    createDescriptorPool();
+    createDescriptorSets();
+    createCommandBuffers();
     createSyncObjects();
 
     gui.createImGuiDescriptorPool(device);
@@ -114,6 +134,9 @@ void VulkanApplication::updateUiData(){
     if(lockgui == false){
         uboCharacter.model = glm::translate(glm::mat4(1.0f), glm::vec3(gui.charas[0], gui.charas[1], gui.charas[2]));
     }
+    gui.updateTiles(tileMaps[0].tiles);
+
+    currentEvent = *gui.currentEvent;
 }
 
 void VulkanApplication::createInstance(){
@@ -396,6 +419,19 @@ void VulkanApplication::createDescriptorSetLayout(){
     tileLayoutInfo.bindingCount = static_cast<uint32_t>(bindingTile.size());
     tileLayoutInfo.pBindings = bindingTile.data();
 
+    VkDescriptorSetLayoutBinding tileMapStorageLayoutBinding{};
+    tileMapStorageLayoutBinding.binding = 0;
+    tileMapStorageLayoutBinding.descriptorCount = 1;
+    tileMapStorageLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    tileMapStorageLayoutBinding.pImmutableSamplers = nullptr;
+    tileMapStorageLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    std::array<VkDescriptorSetLayoutBinding,1> tileMapBinding = {tileMapStorageLayoutBinding};
+    VkDescriptorSetLayoutCreateInfo tileMapLayoutInfo{};
+    tileMapLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    tileMapLayoutInfo.bindingCount = static_cast<uint32_t>(tileMapBinding.size());
+    tileMapLayoutInfo.pBindings = tileMapBinding.data();
+
     //Uniform Character Sampler
     // std::vector<VkDescriptorSetLayoutBinding> characterAnimateLayoutBinding (characterAsset.size());
     // for(int i = 0; i < characterAsset.size(); i++){
@@ -407,7 +443,7 @@ void VulkanApplication::createDescriptorSetLayout(){
     // }
     VkDescriptorSetLayoutBinding characterSamplerLayoutBinding{};
     characterSamplerLayoutBinding.binding = 0;
-    characterSamplerLayoutBinding.descriptorCount = static_cast<uint32_t>(characterAsset.size());
+    characterSamplerLayoutBinding.descriptorCount = static_cast<uint32_t>(characterAssets.size());
     characterSamplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     characterSamplerLayoutBinding.pImmutableSamplers = nullptr;
     characterSamplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -417,7 +453,6 @@ void VulkanApplication::createDescriptorSetLayout(){
     characterAnimateLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     characterAnimateLayoutInfo.bindingCount = 1;//static_cast<uint32_t>(characterSamplerLayoutBindings.size());
     characterAnimateLayoutInfo.pBindings = &characterSamplerLayoutBinding;
-
 
     //Create All Descroptorset Layout
     if (vkCreateDescriptorSetLayout(device, &characterLayoutInfo, nullptr, &descriptorSetLayoutCharacter) != VK_SUCCESS) {
@@ -429,147 +464,11 @@ void VulkanApplication::createDescriptorSetLayout(){
     if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create descriptor set layout!");
     }
-    if (vkCreateDescriptorSetLayout(device, &tileLayoutInfo, nullptr, &descriptorSetLayoutTile) != VK_SUCCESS) {
+    if (vkCreateDescriptorSetLayout(device, &tileMapLayoutInfo, nullptr, &descriptorSetLayoutTileMap) != VK_SUCCESS) {
         throw std::runtime_error("failed to create descriptor set layout!");
     }
 }
-void VulkanApplication::createGraphicsPipeline(){
-    auto vertShaderCode = readFile("shaders/vert.spv");
-    auto fragShaderCode = readFile("shaders/frag.spv");
 
-    VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
-    VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
-
-    VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
-    vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vertShaderStageInfo.module = vertShaderModule;
-    vertShaderStageInfo.pName = "main";
-
-    VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
-    fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    fragShaderStageInfo.module = fragShaderModule;
-    fragShaderStageInfo.pName = "main";
-
-    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
-
-    VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-
-    auto bindingDescription = Vertex::getBindingDescription();
-    auto attributeDescriptions = Vertex::getAttributeDescriptions();
-
-    vertexInputInfo.vertexBindingDescriptionCount = 1;
-    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-    vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
-
-    VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
-    inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-    inputAssembly.primitiveRestartEnable = VK_FALSE;
-
-    VkPipelineViewportStateCreateInfo viewportState{};
-    viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-    viewportState.viewportCount = 1;
-    viewportState.scissorCount = 1;
-
-    VkPipelineRasterizationStateCreateInfo rasterizer{};
-    rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-    rasterizer.depthClampEnable = VK_FALSE;
-    rasterizer.rasterizerDiscardEnable = VK_FALSE;
-    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-    rasterizer.lineWidth = 1.0f;
-    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-    rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-    rasterizer.depthBiasEnable = VK_FALSE;
-
-    VkPipelineMultisampleStateCreateInfo multisampling{};
-    multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-    multisampling.sampleShadingEnable = VK_FALSE;
-    multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-
-    VkPipelineDepthStencilStateCreateInfo depthStencil{};
-    depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-    depthStencil.depthTestEnable = VK_TRUE;
-    depthStencil.depthWriteEnable = VK_TRUE;
-    depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
-    depthStencil.depthBoundsTestEnable = VK_FALSE;
-    depthStencil.stencilTestEnable = VK_FALSE;
-
-    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-    // colorBlendAttachment.blendEnable = VK_FALSE;
-    colorBlendAttachment.blendEnable = VK_TRUE;
-    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;  // Gunakan alpha dari sumber (fragment shader)
-    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA; // Gabungkan dengan warna latar
-    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Gunakan alpha penuh
-    colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
-    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-
-    VkPipelineColorBlendStateCreateInfo colorBlending{};
-    colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    colorBlending.logicOpEnable = VK_FALSE;
-    colorBlending.logicOp = VK_LOGIC_OP_COPY;
-    colorBlending.attachmentCount = 1;
-    colorBlending.pAttachments = &colorBlendAttachment;
-    colorBlending.blendConstants[0] = 0.0f;
-    colorBlending.blendConstants[1] = 0.0f;
-    colorBlending.blendConstants[2] = 0.0f;
-    colorBlending.blendConstants[3] = 0.0f;
-
-    std::vector<VkDynamicState> dynamicStates = {
-        VK_DYNAMIC_STATE_VIEWPORT,
-        VK_DYNAMIC_STATE_SCISSOR
-    };
-    VkPipelineDynamicStateCreateInfo dynamicState{};
-    dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-    dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
-    dynamicState.pDynamicStates = dynamicStates.data();
-
-    std::array<VkDescriptorSetLayout, 3> setLayouts = { 
-        descriptorSetLayout,
-        descriptorSetLayoutCharacter,
-        descriptorSetLayoutCharacterSampler
-    };
-
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = setLayouts.size();
-    pipelineLayoutInfo.pSetLayouts = setLayouts.data();
-
-    if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create pipeline layout!");
-    }
-
-
-    VkGraphicsPipelineCreateInfo pipelineInfo{};
-    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineInfo.stageCount = 2;
-    pipelineInfo.pStages = shaderStages;
-    pipelineInfo.pVertexInputState = &vertexInputInfo;
-    pipelineInfo.pInputAssemblyState = &inputAssembly;
-    pipelineInfo.pViewportState = &viewportState;
-    pipelineInfo.pRasterizationState = &rasterizer;
-    pipelineInfo.pMultisampleState = &multisampling;
-    pipelineInfo.pDepthStencilState = &depthStencil;
-    pipelineInfo.pColorBlendState = &colorBlending;
-    pipelineInfo.pDynamicState = &dynamicState;
-    pipelineInfo.layout = pipelineLayout;
-    pipelineInfo.renderPass = renderPass;
-    pipelineInfo.subpass = 0;
-    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-
-    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create graphics pipeline!");
-    }
-    DEBUG_LOG("PIPELINE");
-
-    vkDestroyShaderModule(device, fragShaderModule, nullptr);
-    vkDestroyShaderModule(device, vertShaderModule, nullptr);
-}
 void VulkanApplication::createCommandPool(){
     QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice);
 
@@ -637,6 +536,37 @@ void VulkanApplication::createDescriptorSets() {
     if (vkAllocateDescriptorSets(device, &allocInfoCharacterSampler, descriptorSetsCharacterSampler.data()) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate descriptor sets character sampler!");
     }
+
+    //SET 3
+    std::vector<VkDescriptorSetLayout> tileMapLayout {
+        descriptorSetLayoutTileMap, descriptorSetLayoutTileMap,
+    };
+    
+    VkDescriptorSetAllocateInfo allocInfoTileMap{};
+    allocInfoTileMap.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfoTileMap.descriptorPool = descriptorPool;
+    allocInfoTileMap.descriptorSetCount = static_cast<uint32_t>(tileMapLayout.size());
+    allocInfoTileMap.pSetLayouts = tileMapLayout.data();
+    
+    descriptorSetsTileMap.resize(MAX_FRAMES_IN_FLIGHT);
+    if (vkAllocateDescriptorSets(device, &allocInfoTileMap, descriptorSetsTileMap.data()) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate descriptor sets tilemmap!");
+    }
+
+    //SET BATTLE ENEMY 
+    std::vector<VkDescriptorSetLayout> battleSamplerLayout{
+        descriptorSetLayoutBattleSampler, descriptorSetLayoutBattleSampler,
+    };
+    VkDescriptorSetAllocateInfo allocInfoBattleEnemySampler{};
+    allocInfoBattleEnemySampler.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfoBattleEnemySampler.descriptorPool = descriptorPool;
+    allocInfoBattleEnemySampler.descriptorSetCount = static_cast<uint32_t>(battleSamplerLayout.size());
+    allocInfoBattleEnemySampler.pSetLayouts = battleSamplerLayout.data();
+
+    descriptorSetsBattleSampler.resize(MAX_FRAMES_IN_FLIGHT);
+    if (vkAllocateDescriptorSets(device, &allocInfoBattleEnemySampler, descriptorSetsBattleSampler.data()) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate descriptor sets battle enemy sampler!");
+    }
     
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         //SET 0 per frame
@@ -661,7 +591,32 @@ void VulkanApplication::createDescriptorSets() {
             characterImageInfos[x].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         }
         
-        std::vector<VkWriteDescriptorSet> descriptorWrites(1 + entities.size() + characterImages.size());
+        DEBUG_LOG("DESCRIPTOR SETS");
+        //SET 3 per frame
+        std::vector<VkDescriptorBufferInfo> tileMapInfos(tileMaps.size());
+        for (size_t x = 0; x < tileMaps.size(); x++){
+            tileMapInfos[x].buffer = tileMapStorageBuffers[(x * MAX_FRAMES_IN_FLIGHT) + i];
+            tileMapInfos[x].offset = 0;
+            tileMapInfos[x].range = VK_WHOLE_SIZE;
+        }
+
+        //SET Battle Enemy sampler
+        std::vector<VkDescriptorImageInfo> battleEnemyImagesInfos(battleEnemyImages.size());
+        for (size_t x = 0; x < battleEnemyImages.size(); x++){
+            battleEnemyImagesInfos[x].sampler = battleEnemySamplers[x];
+            battleEnemyImagesInfos[x].imageView = battleEnemyImageViews[x];
+            battleEnemyImagesInfos[x].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        }
+
+        //SET Battle Effect sampler
+        std::vector<VkDescriptorImageInfo> battleEffectImagesInfos(battleEffectImages.size());
+        for (size_t x = 0; x < battleEffectImages.size(); x++){
+            battleEffectImagesInfos[x].sampler = battleEffectSamplers[x];
+            battleEffectImagesInfos[x].imageView = battleEffectImageViews[x];
+            battleEffectImagesInfos[x].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        }
+        
+        std::vector<VkWriteDescriptorSet> descriptorWrites(1 + entities.size() + characterImages.size() + tileMaps.size() + battleEnemyImages.size() + battleEffectImages.size());
         
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = descriptorSets[i];
@@ -690,11 +645,40 @@ void VulkanApplication::createDescriptorSets() {
             descriptorWrites[1+entities.size()+s].descriptorCount = 1;
             descriptorWrites[1+entities.size()+s].pImageInfo = &characterImageInfos[s];
         }
+
+        for(int s = 0; s < tileMaps.size(); s++){
+            descriptorWrites[1+entities.size()+characterImages.size()+s].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[1+entities.size()+characterImages.size()+s].dstSet = descriptorSetsTileMap[i];
+            descriptorWrites[1+entities.size()+characterImages.size()+s].dstBinding = 0;
+            descriptorWrites[1+entities.size()+characterImages.size()+s].dstArrayElement = 0;
+            descriptorWrites[1+entities.size()+characterImages.size()+s].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            descriptorWrites[1+entities.size()+characterImages.size()+s].descriptorCount = 1;
+            descriptorWrites[1+entities.size()+characterImages.size()+s].pBufferInfo = &tileMapInfos[s];
+        }
+
+        for(int s = 0; s < battleEnemyImages.size(); s++){
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+s].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+s].dstSet = descriptorSetsBattleSampler[i];
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+s].dstBinding = 0;
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+s].dstArrayElement = s;
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+s].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+s].descriptorCount = 1;
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+s].pImageInfo = &battleEnemyImagesInfos[s];
+        }
+
+        for(int s = 0; s < battleEffectImages.size(); s++){
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+battleEnemyImages.size()+s].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+battleEnemyImages.size()+s].dstSet = descriptorSetsBattleSampler[i];
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+battleEnemyImages.size()+s].dstBinding = 1;
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+battleEnemyImages.size()+s].dstArrayElement = s;
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+battleEnemyImages.size()+s].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+battleEnemyImages.size()+s].descriptorCount = 1;
+            descriptorWrites[1+entities.size()+characterImages.size()+tileMaps.size()+battleEnemyImages.size()+s].pImageInfo = &battleEffectImagesInfos[s];
+        }
         
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-        DEBUG_LOG("DESCRIPTOR SETS");
     }
-    // gui.setUVMap(descriptorSets[2]);
+
 }
 
 void VulkanApplication::createSyncObjects() {
@@ -740,11 +724,20 @@ void VulkanApplication::cleanup() {
 
     vkDestroyPipeline(device, graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+    vkDestroyPipeline(device, graphicsPipelineDebug, nullptr);
+    vkDestroyPipelineLayout(device, pipelineLayoutDebug, nullptr);
+    vkDestroyPipeline(device, graphicsPipelineBattle, nullptr);
+    vkDestroyPipelineLayout(device, pipelineLayoutBattle, nullptr);
     vkDestroyRenderPass(device, renderPass, nullptr);
 
     for (size_t i = 0; i < uniformBuffers.size(); i++) {
         vkDestroyBuffer(device, uniformBuffers[i], nullptr);
         vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
+    }
+
+    for(size_t i = 0; i < tileMapStorageBuffers.size(); i++){
+        vkDestroyBuffer(device, tileMapStorageBuffers[i], nullptr);
+        vkFreeMemory(device, tileMapStorageBuffersMemory[i], nullptr);
     }
     
     for (size_t i = 0; i < entityUniformBuffers.size(); i++) {
@@ -779,10 +772,25 @@ void VulkanApplication::cleanup() {
         vkFreeMemory(device, characterImageMemorys[i], nullptr);
     }
 
+    for (int i = 0; i < battleEnemyImages.size(); i++) {
+        vkDestroySampler(device, battleEnemySamplers[i], nullptr);
+        vkDestroyImageView(device, battleEnemyImageViews[i], nullptr);
+        vkDestroyImage(device, battleEnemyImages[i], nullptr);
+        vkFreeMemory(device, battleEnemyImageMemorys[i], nullptr);
+    }
+
+    for (int i = 0; i < battleEffectImages.size(); i++) {
+        vkDestroySampler(device, battleEffectSamplers[i], nullptr);
+        vkDestroyImageView(device, battleEffectImageViews[i], nullptr);
+        vkDestroyImage(device, battleEffectImages[i], nullptr);
+        vkFreeMemory(device, battleEffectImageMemorys[i], nullptr);
+    }
+
     vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
     vkDestroyDescriptorSetLayout(device, descriptorSetLayoutCharacter, nullptr);
     vkDestroyDescriptorSetLayout(device, descriptorSetLayoutCharacterSampler, nullptr);
-    vkDestroyDescriptorSetLayout(device, descriptorSetLayoutTile, nullptr);
+    vkDestroyDescriptorSetLayout(device, descriptorSetLayoutTileMap, nullptr);
+    vkDestroyDescriptorSetLayout(device, descriptorSetLayoutBattleSampler, nullptr);
 
     vkDestroyBuffer(device, indexBuffer, nullptr);
     vkFreeMemory(device, indexBufferMemory, nullptr);

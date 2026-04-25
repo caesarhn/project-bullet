@@ -5,7 +5,7 @@ std::chrono::time_point<std::chrono::high_resolution_clock> VulkanApplication::l
 void VulkanApplication::initVariables(){
     lastFrameTime = std::chrono::high_resolution_clock::now();
     
-    textureAsset = {
+    textureAssets = {
         "src/char/char1_idle1.png",
         "src/char/char1_idle2.png",
         "src/char/char1_idle3.png",
@@ -14,7 +14,7 @@ void VulkanApplication::initVariables(){
         "src/char1/idle.png"
     };
 
-    characterAsset = {
+    characterAssets = {
         "src/char1/idle.png",
         "src/char1/walk.png",
         "src/char1/run.png",
@@ -25,6 +25,23 @@ void VulkanApplication::initVariables(){
         "src/map/tiles/test_3.png",
         "src/map/tiles/test_4.png",
         "src/map/tiles/test_5.png",
+        "src/map/tiles/tiless.jpg",
+        "src/char_enemies/minotaur.png",
+    };
+
+    battleEnemyAssets = {
+        "src/char_enemies/minotaur.png",
+    };
+
+    battleEffectAssets = {
+        "src/explosion/explode_a.png",
+        "src/explosion/explode_b.png",
+        "src/explosion/explode_c.png",
+        "src/explosion/explode_d.png",
+        "src/explosion/explode_e.png",
+        "src/explosion/explode_f.png",
+        "src/explosion/explode_g.png",
+        // "src/explosion/explode-b.png",
     };
 
     vertices = {
@@ -50,10 +67,16 @@ void VulkanApplication::initVariables(){
         {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
         {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
 
-        {{-5.0f, -5.0f, -10.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-        {{5.0f, -5.0f, -10.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{5.0f, 5.0f, -10.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-        {{-5.0f, 5.0f, -10.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
+        {{-5.0f, -5.0f, -1.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{5.0f, -5.0f, -1.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{5.0f, 5.0f, -1.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+        {{-5.0f, 5.0f, -1.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
+
+        //Battle vertex
+        {{5.0f, -3.0f, 0.5f}, {1.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+        {{2.0f, -3.0f, 0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{2.0f, 1.0f, 0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
+        {{5.0f, 1.0f, 0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
     };
 
     tileBlock = {

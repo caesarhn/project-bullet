@@ -25,8 +25,7 @@ void VulkanApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint3
 
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-
+    
         VkViewport viewport{};
         viewport.x = 0.0f;
         viewport.y = 0.0f;
@@ -35,7 +34,7 @@ void VulkanApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint3
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-
+        
         VkRect2D scissor{};
         scissor.offset = {0, 0};
         scissor.extent = swapChainExtent;
@@ -45,37 +44,76 @@ void VulkanApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint3
         VkBuffer vertexBuffers1[] = {vertexBuffer1};
         VkBuffer vertexBufferTiles[] = {vertexBufferTileLine};
         VkDeviceSize offsets[] = {0};
-
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers1, offsets);
-        vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
-
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &descriptorSetsCharacter[currentFrame], 0, nullptr);
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 2, 1, &descriptorSetsCharacterSampler[currentFrame], 0, nullptr);
+    
+    
         DEBUG_LOG("RECORD COMMAND BUFFER");
-        
-        for(int i = 0; i < charactersAttribute.size(); i++){
-            if(charactersAttribute[i].isRender == true){
-                prepareDrawCharacters(i, currentFrame);
-                vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &descriptorSetsCharacter[(i*MAX_FRAMES_IN_FLIGHT)+currentFrame], 0, nullptr);
+    
+        if(currentEvent == EVENT_WORLD){
+            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
-                vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()/2), 1, 0, 0, 0);
+            vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers1, offsets);
+            vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+    
+            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
+            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &descriptorSetsCharacter[currentFrame], 0, nullptr);
+            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 2, 1, &descriptorSetsCharacterSampler[currentFrame], 0, nullptr);
+            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 3, 1, &descriptorSetsTileMap[currentFrame], 0, nullptr);
+            
+            for(int i = 0; i < charactersAttribute.size(); i++){
+                if(charactersAttribute[i].isRender == true){
+                    // prepareDrawCharacters(i, currentFrame);
+                    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &descriptorSetsCharacter[(i*MAX_FRAMES_IN_FLIGHT)+currentFrame], 0, nullptr);
+    
+                    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(6), 1, 0, 0, 0);
+    
+                }
+            }
+    
+            renderTileMap(commandBuffer, currentFrame);
+
+            if(gui.showTile){
+                // vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBufferTiles, offsets);
+                // vkCmdBindIndexBuffer(commandBuffer, indexBufferTileLines, 0, VK_INDEX_TYPE_UINT16);
+                // memcpy(entityUniformBuffersMapped[(4 * MAX_FRAMES_IN_FLIGHT)+currentFrame], &entities[4], sizeof(uboCharacter));
+                // // prepareDrawCharacters(2, currentFrame);
+                // vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &descriptorSetsCharacter[(4*MAX_FRAMES_IN_FLIGHT)+currentFrame], 0, nullptr);
+                // vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(tileLineIndexX.size()), 1, 0, 0, 0);
+            }
+            if(gui.debugCol){
+                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipelineDebug);
+                vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+                vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+                vkCmdSetLineWidth(commandBuffer, 1.0f);
+    
+                vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutDebug, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
+                vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutDebug, 1, 1, &descriptorSetsCharacter[currentFrame], 0, nullptr);
+    
+                vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers1, offsets);
+                vkCmdDraw(commandBuffer, 3, 1, 0, 0);
             }
         }
+        else if(currentEvent == EVENT_BATTLE){
+            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipelineBattle);
+            DEBUG_LOG(battleEnemyImages.size());
+            vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+            vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+            
+            DEBUG_LOG("EVENT BATTLE");
+            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutBattle, 0, 1, &descriptorSetsBattleSampler[currentFrame], 0, nullptr);
+            vkCmdPushConstants(commandBuffer, pipelineLayoutBattle, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(BattlePushConstant), &battlePushConstant);
 
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBufferTiles, offsets);
-        vkCmdBindIndexBuffer(commandBuffer, indexBufferTileLines, 0, VK_INDEX_TYPE_UINT16);
-        // memcpy(entityUniformBuffersMapped[(3*MAX_FRAMES_IN_FLIGHT) + currentFrame], &entities[3], sizeof(uboCharacter));
+            vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers1, offsets);
+            vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
-        // entities[2].model = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        memcpy(entityUniformBuffersMapped[(4 * MAX_FRAMES_IN_FLIGHT)+currentFrame], &entities[4], sizeof(uboCharacter));
+            vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(6), 1, 18, 0, 0);
+            // vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+        }
 
-        // prepareDrawCharacters(2, currentFrame);
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &descriptorSetsCharacter[(4*MAX_FRAMES_IN_FLIGHT)+currentFrame], 0, nullptr);
-        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(tileLineIndexX.size()), 1, 0, 0, 0);
-        
-        gui.renderUI();
+
+        gui.renderUI((float) swapChainExtent.width, (float) swapChainExtent.height);
         gui.recordImGuiCommands(commandBuffer);
+
+
     vkCmdEndRenderPass(commandBuffer);
 
     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
@@ -83,7 +121,7 @@ void VulkanApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint3
     }
 }
 
-void VulkanApplication::updateUniformBuffer(uint32_t currentImage) {
+void VulkanApplication::updateUniformBuffer(uint32_t currentFrame) {
     static auto startTime = std::chrono::high_resolution_clock::now();
 
     auto currentTime = std::chrono::high_resolution_clock::now();
@@ -91,14 +129,20 @@ void VulkanApplication::updateUniformBuffer(uint32_t currentImage) {
 
     uboCharacter.model = glm::mat4(1.0f);
 
-    memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+    memcpy(uniformBuffersMapped[currentFrame], &ubo, sizeof(ubo));
     DEBUG_LOG("updated uniform buffer");
-    memcpy(entityUniformBuffersMapped[(3*MAX_FRAMES_IN_FLIGHT) + currentImage], &entities[3], sizeof(uboCharacter));
+    memcpy(entityUniformBuffersMapped[(3*MAX_FRAMES_IN_FLIGHT) + currentFrame], &entities[3], sizeof(uboCharacter));
 
     if(showMapLine == 1){
 
     }
 
+}
+
+void VulkanApplication::updateStorageBuffer(uint32_t currentFrame){
+    for(int i = 0; i < tileMaps.size(); i++){
+        memcpy(tileMapStorageBuffersMapped[(i * MAX_FRAMES_IN_FLIGHT) + currentFrame], tileMaps[i].tiles.data(), tileMaps[i].tiles.size() * sizeof(int));
+    }
 }
 
 void VulkanApplication::drawFrame() {
@@ -114,7 +158,15 @@ void VulkanApplication::drawFrame() {
         throw std::runtime_error("failed to acquire swap chain image!");
     }
 
+    for(int i = 0; i < charactersAttribute.size(); i++){
+        if(charactersAttribute[i].isRender == true){
+            prepareDrawCharacters(i, currentFrame);
+        }
+    }
+
     updateUniformBuffer(currentFrame);
+    updateStorageBuffer(currentFrame);
+    // updateStorageBuffer(currentFrame);
 
     vkResetFences(device, 1, &inFlightFences[currentFrame]);
 
@@ -195,8 +247,14 @@ void VulkanApplication::mainLoop() {
 
     Walk idle{7};
 
+    for(int x = 0; x < 100; x++){
+        std::cout << x <<" "<< tileMaps[0].tiles[x] << std::endl; 
+    }
+
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
+
+        // break;
 
         //mouse logic
         glfwGetCursorPos(window, &mouseX, &mouseY);

@@ -1,12 +1,70 @@
 cmake_minimum_required(VERSION 3.10)  # Versi minimum CMake
-project(ProjectBullet_0.0.1)                    # Nama proyek
+project(ProjectBullet_0.0.2)                    # Nama proyek
 
 # Pilih compiler
 set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_C_COMPILER gcc)
 
 set(CMAKE_CXX_STANDARD 17)            # Gunakan C++17
-set(CMAKE_CXX_STANDARD_REQUIRED True) 
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+set(MAIN_FRAGMENT_SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag")
+set(MAIN_FRAGMENT_SHADER_OUT "${CMAKE_CURRENT_SOURCE_DIR}/shaders/frag.spv")
+set(MAIN_VERTEX_SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert")
+set(MAIN_VERTEX_SHADER_OUT "${CMAKE_CURRENT_SOURCE_DIR}/shaders/vert.spv")
+
+set(DEBUG_LINE_FRAGMENT_SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders/debug_line.frag")
+set(DEBUG_LINE_FRAGMENT_SHADER_OUT "${CMAKE_CURRENT_SOURCE_DIR}/shaders/debug_line.frag.spv")
+set(DEBUG_LINE_VERTEX_SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders/debug_line.vert")
+set(DEBUG_LINE_VERTEX_SHADER_OUT "${CMAKE_CURRENT_SOURCE_DIR}/shaders/debug_line.vert.spv")
+
+set(BATTLE_FRAGMENT_SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders/battle.frag")
+set(BATTLE_FRAGMENT_SHADER_OUT "${CMAKE_CURRENT_SOURCE_DIR}/shaders/battle.frag.spv")
+set(BATTLE_VERTEX_SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders/battle.vert")
+set(BATTLE_VERTEX_SHADER_OUT "${CMAKE_CURRENT_SOURCE_DIR}/shaders/battle.vert.spv")
+
+add_custom_command(
+    OUTPUT ${MAIN_FRAGMENT_SHADER_OUT}
+    COMMAND glslangValidator -V ${MAIN_FRAGMENT_SHADER_SRC} -o ${MAIN_FRAGMENT_SHADER_OUT}
+    DEPENDS ${MAIN_FRAGMENT_SHADER_SRC}
+    COMMENT "Mengkompilasi Main Fragment Shader menjadi SPIR-V..."
+)
+
+add_custom_command(
+    OUTPUT ${MAIN_VERTEX_SHADER_OUT}
+    COMMAND glslangValidator -V ${MAIN_VERTEX_SHADER_SRC} -o ${MAIN_VERTEX_SHADER_OUT}
+    DEPENDS ${MAIN_VERTEX_SHADER_SRC}
+    COMMENT "Mengkompilasi Main Vertex Shader menjadi SPIR-V..."
+)
+
+add_custom_command(
+    OUTPUT ${DEBUG_LINE_FRAGMENT_SHADER_OUT}
+    COMMAND glslangValidator -V ${DEBUG_LINE_FRAGMENT_SHADER_SRC} -o ${DEBUG_LINE_FRAGMENT_SHADER_OUT}
+    DEPENDS ${DEBUG_LINE_FRAGMENT_SHADER_SRC}
+    COMMENT "Mengkompilasi Debug Line Fragment Shader menjadi SPIR-V..."
+)
+
+add_custom_command(
+    OUTPUT ${DEBUG_LINE_VERTEX_SHADER_OUT}
+    COMMAND glslangValidator -V ${DEBUG_LINE_VERTEX_SHADER_SRC} -o ${DEBUG_LINE_VERTEX_SHADER_OUT}
+    DEPENDS ${DEBUG_LINE_VERTEX_SHADER_SRC}
+    COMMENT "Mengkompilasi Debug Line Vertex Shader menjadi SPIR-V..."
+)
+
+add_custom_command(
+    OUTPUT ${BATTLE_FRAGMENT_SHADER_OUT}
+    COMMAND glslangValidator -V ${BATTLE_FRAGMENT_SHADER_SRC} -o ${BATTLE_FRAGMENT_SHADER_OUT}
+    DEPENDS ${BATTLE_FRAGMENT_SHADER_SRC}
+    COMMENT "Mengkompilasi Battle Fragment Shader menjadi SPIR-V..."
+)
+
+add_custom_command(
+    OUTPUT ${BATTLE_VERTEX_SHADER_OUT}
+    COMMAND glslangValidator -V ${BATTLE_VERTEX_SHADER_SRC} -o ${BATTLE_VERTEX_SHADER_OUT}
+    DEPENDS ${BATTLE_VERTEX_SHADER_SRC}
+    COMMENT "Mengkompilasi Battle Vertex Shader menjadi SPIR-V..."
+)
+
 
 # Tentukan lokasi Vulkan SDK secara manual
 if(WIN32)
@@ -70,15 +128,89 @@ add_executable(
     lib/vulkan/texture.cpp
     lib/vulkan/variable.cpp
     lib/vulkan/vulkan_helper.cpp
+    lib/vulkan/pipelines.cpp
+    lib/vulkan/descriptor.cpp
+    lib/vulkan/application.cpp
     
     lib/app/app.cpp
+    lib/app/battle.cpp
 
     lib/char/char.cpp
 
     lib/object/tools.cpp
+    lib/object/tilemap.cpp
 
     lib/physics/physics.cpp
-)  # Nama output dan source files
+
+    lib/app/mechanics/mechanics.cpp
+    lib/app/mechanics/weapons.cpp
+    lib/app/mechanics/attacks.cpp
+    lib/app/mechanics/enemies.cpp
+
+    ${MAIN_FRAGMENT_SHADER_OUT}
+    ${MAIN_VERTEX_SHADER_OUT}
+    ${DEBUG_LINE_FRAGMENT_SHADER_OUT}
+    ${DEBUG_LINE_VERTEX_SHADER_OUT}
+    ${BATTLE_FRAGMENT_SHADER_OUT}
+    ${BATTLE_VERTEX_SHADER_OUT}
+    )  # Nama output dan source files
 
 # Hubungkan dengan library Vulkan
 target_link_libraries(vulkan_new PRIVATE ${LIBS})
+
+# set(MAIN_FRAGMENT_SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag")
+# set(MAIN_FRAGMENT_SHADER_OUT "${CMAKE_CURRENT_SOURCE_DIR}/shaders/frag.spv")
+# set(MAIN_VERTEX_SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert")
+# set(MAIN_VERTEX_SHADER_OUT "${CMAKE_CURRENT_SOURCE_DIR}/shaders/vert.spv")
+
+# set(DEBUG_LINE_FRAGMENT_SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders/debug_line.frag")
+# set(DEBUG_LINE_FRAGMENT_SHADER_OUT "${CMAKE_CURRENT_SOURCE_DIR}/shaders/debug_line.frag.spv")
+# set(DEBUG_LINE_VERTEX_SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders/debug_line.vert")
+# set(DEBUG_LINE_VERTEX_SHADER_OUT "${CMAKE_CURRENT_SOURCE_DIR}/shaders/debug_line.vert.spv")
+
+# set(BATTLE_FRAGMENT_SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders/battle.frag")
+# set(BATTLE_FRAGMENT_SHADER_OUT "${CMAKE_CURRENT_SOURCE_DIR}/shaders/battle.frag.spv")
+# set(BATTLE_VERTEX_SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders/battle.vert")
+# set(BATTLE_VERTEX_SHADER_OUT "${CMAKE_CURRENT_SOURCE_DIR}/shaders/battle.vert.spv")
+
+# add_custom_command(
+#     OUTPUT ${MAIN_FRAGMENT_SHADER_OUT}
+#     COMMAND glslangValidator -V ${MAIN_FRAGMENT_SHADER_SRC} -o ${MAIN_FRAGMENT_SHADER_OUT}
+#     DEPENDS ${MAIN_FRAGMENT_SHADER_SRC}
+#     COMMENT "Mengkompilasi Main Fragment Shader menjadi SPIR-V..."
+# )
+
+# add_custom_command(
+#     OUTPUT ${MAIN_VERTEX_SHADER_OUT}
+#     COMMAND glslangValidator -V ${MAIN_VERTEX_SHADER_SRC} -o ${MAIN_VERTEX_SHADER_OUT}
+#     DEPENDS ${MAIN_VERTEX_SHADER_SRC}
+#     COMMENT "Mengkompilasi Main Vertex Shader menjadi SPIR-V..."
+# )
+
+# add_custom_command(
+#     OUTPUT ${DEBUG_LINE_FRAGMENT_SHADER_OUT}
+#     COMMAND glslangValidator -V ${DEBUG_LINE_FRAGMENT_SHADER_SRC} -o ${DEBUG_LINE_FRAGMENT_SHADER_OUT}
+#     DEPENDS ${DEBUG_LINE_FRAGMENT_SHADER_SRC}
+#     COMMENT "Mengkompilasi Debug Line Fragment Shader menjadi SPIR-V..."
+# )
+
+# add_custom_command(
+#     OUTPUT ${DEBUG_LINE_VERTEX_SHADER_OUT}
+#     COMMAND glslangValidator -V ${MAIN_DEBUG_LINE_SHADER_SRC} -o ${DEBUG_LINE_VERTEX_SHADER_OUT}
+#     DEPENDS ${DEBUG_LINE_VERTEX_SHADER_SRC}
+#     COMMENT "Mengkompilasi Debug Line Vertex Shader menjadi SPIR-V..."
+# )
+
+# add_custom_command(
+#     OUTPUT ${BATTLE_FRAGMENT_SHADER_OUT}
+#     COMMAND glslangValidator -V ${BATTLE_FRAGMENT_SHADER_SRC} -o ${BATTLE_FRAGMENT_SHADER_OUT}
+#     DEPENDS ${BATTLE_FRAGMENT_SHADER_SRC}
+#     COMMENT "Mengkompilasi Battle Fragment Shader menjadi SPIR-V..."
+# )
+
+# add_custom_command(
+#     OUTPUT ${BATTLE_VERTEX_SHADER_OUT}
+#     COMMAND glslangValidator -V ${BATTLE_VERTEX_SHADER_SRC} -o ${BATTLE_VERTEX_SHADER_OUT}
+#     DEPENDS ${BATTLE_VERTEX_SHADER_SRC}
+#     COMMENT "Mengkompilasi Battle Vertex Shader menjadi SPIR-V..."
+# )
